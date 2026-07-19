@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { CrowdMeter } from '../components/CrowdMeter'
+import { NotificationSettings } from '../components/NotificationSettings'
 import { WeatherPanel } from '../components/WeatherPanel'
 import { useGateway } from '../hooks/GatewayContext'
 import { addDays, formatShortDate, todayInAlaska, WEATHER_META } from '../lib/utils'
@@ -40,6 +41,8 @@ export function InsightsPage() {
           %).
         </p>
       )}
+
+      <NotificationSettings />
 
       <section>
         <h2 className="font-display text-xl font-semibold text-spruce-900">7-day outlook</h2>

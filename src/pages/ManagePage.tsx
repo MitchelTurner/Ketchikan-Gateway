@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { NotificationSettings } from '../components/NotificationSettings'
 import { getPredictionLog, setActualForDate, accuracyStats } from '../lib/accuracy'
 import {
   clearActualOverride,
@@ -40,26 +39,20 @@ export function ManagePage() {
     try {
       await loginAdmin(email, password)
       setAuthed(true)
-      setMsg('Signed in to PocketBase.')
+      setMsg('Signed in.')
       setPassword('')
     } catch {
-      setMsg('Login failed. Check email/password or use local actual overrides.')
+      setMsg('Login failed. Check email and password.')
     }
   }
 
   const onCsv = async (file: File | null) => {
-    if (!file) return
+    if (!file || !authed) return
     const text = await file.text()
     const { rows, errors } = parseShipVisitsCsv(text)
     setCsvPreview(rows.length)
     if (errors.length) {
       setMsg(errors.slice(0, 3).join(' · '))
-      return
-    }
-    if (!authed) {
-      setMsg(
-        `Parsed ${rows.length} rows. Sign in to import into PocketBase, or keep using bundled/local data.`,
-      )
       return
     }
     setImporting(true)
@@ -75,27 +68,25 @@ export function ManagePage() {
   }
 
   const saveShipActual = async (visitId: string) => {
+    if (!authed) return
     const n = Number(actualDrafts[visitId])
     if (!Number.isFinite(n) || n < 0) {
       setMsg('Enter a valid passenger count.')
       return
     }
     setActualOverride(visitId, n)
-    if (authed) {
-      try {
-        await updateVisitActual(visitId, n)
-        setMsg(`Saved actual ${n.toLocaleString()} to PocketBase.`)
-      } catch {
-        setMsg(`Saved locally (${n.toLocaleString()}); PocketBase update failed.`)
-      }
-    } else {
-      setMsg(`Saved actual ${n.toLocaleString()} locally (tunes the model).`)
+    try {
+      await updateVisitActual(visitId, n)
+      setMsg(`Saved actual ${n.toLocaleString()} to PocketBase.`)
+    } catch {
+      setMsg(`Saved locally (${n.toLocaleString()}); PocketBase update failed.`)
     }
     await refetch()
     bumpLog()
   }
 
   const saveDayActual = () => {
+    if (!authed) return
     const n = Number(dayActual)
     if (!Number.isFinite(n) || n < 0) {
       setMsg('Enter a valid day total.')
@@ -106,14 +97,69 @@ export function ManagePage() {
     bumpLog()
   }
 
+  if (!authed) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center px-4 py-16">
+        <h1 className="font-display text-3xl font-semibold text-spruce-900">Admin sign in</h1>
+        <p className="mt-2 text-sm text-fog-500">
+          Operator tools are restricted. Sign in with your PocketBase account to continue.
+        </p>
+        <form onSubmit={(e) => void doLogin(e)} className="mt-8 space-y-3">
+          <input
+            type="email"
+            required
+            autoComplete="username"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-xl border border-fog-300 px-3 py-2.5 text-sm"
+          />
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-xl border border-fog-300 px-3 py-2.5 text-sm"
+          />
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-spruce-900 px-4 py-2.5 text-sm font-semibold text-fog-50"
+          >
+            Sign in
+          </button>
+        </form>
+        {msg && (
+          <p className="mt-4 rounded-xl border border-alert-100 bg-alert-100/60 px-4 py-3 text-sm text-alert-600">
+            {msg}
+          </p>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-10">
-      <div>
-        <h1 className="font-display text-3xl font-semibold text-spruce-900">Manage</h1>
-        <p className="mt-2 max-w-2xl text-fog-600">
-          Import schedules, log actuals to tune predictions, check official port sources, and
-          set local alerts. Current data source: {source}.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-spruce-900">Manage</h1>
+          <p className="mt-2 max-w-2xl text-fog-600">
+            Import schedules, log actuals to tune predictions, and check official port sources.
+            Data source: {source}.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            logoutAdmin()
+            setAuthed(false)
+            setMsg(null)
+          }}
+          className="rounded-full border border-fog-300 bg-white px-4 py-2 text-sm font-semibold text-fog-700"
+        >
+          Sign out
+        </button>
       </div>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -136,55 +182,6 @@ export function ManagePage() {
             </p>
           </div>
         ))}
-      </section>
-
-      <NotificationSettings />
-
-      <section className="rounded-2xl border border-fog-200 bg-white/80 p-5">
-        <h2 className="font-display text-xl font-semibold text-spruce-900">
-          PocketBase admin
-        </h2>
-        {!authed ? (
-          <form onSubmit={(e) => void doLogin(e)} className="mt-4 grid gap-3 sm:grid-cols-3">
-            <input
-              type="email"
-              required
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-xl border border-fog-300 px-3 py-2 text-sm"
-            />
-            <input
-              type="password"
-              required
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-xl border border-fog-300 px-3 py-2 text-sm"
-            />
-            <button
-              type="submit"
-              className="rounded-xl bg-spruce-900 px-4 py-2 text-sm font-semibold text-fog-50"
-            >
-              Sign in
-            </button>
-          </form>
-        ) : (
-          <div className="mt-3 flex items-center gap-3">
-            <p className="text-sm text-spruce-700">Signed in</p>
-            <button
-              type="button"
-              onClick={() => {
-                logoutAdmin()
-                setAuthed(false)
-                setMsg('Signed out.')
-              }}
-              className="rounded-full border border-fog-300 px-3 py-1 text-xs font-semibold"
-            >
-              Sign out
-            </button>
-          </div>
-        )}
       </section>
 
       <section className="rounded-2xl border border-fog-200 bg-white/80 p-5">
@@ -210,8 +207,7 @@ export function ManagePage() {
           Today’s actuals — {formatShortDate(today)}
         </h2>
         <p className="mt-1 text-sm text-fog-500">
-          Logging actuals tunes the ashore factor for future days. Local overrides apply even
-          without admin login.
+          Logging actuals tunes the ashore factor for future days.
         </p>
 
         <div className="mt-4 flex flex-wrap items-end gap-2">
@@ -292,8 +288,7 @@ export function ManagePage() {
           Official port sources
         </h2>
         <p className="mt-1 text-sm text-fog-500">
-          Verify cancellations and berth changes against the Port of Ketchikan. PDFs update
-          through the season.
+          Verify cancellations and berth changes against the Port of Ketchikan.
         </p>
         <ul className="mt-4 space-y-3">
           {PORT_SOURCES.map((s) => (

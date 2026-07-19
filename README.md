@@ -8,7 +8,8 @@ Daily cruise passenger forecasts for [ketchikangateway.org](https://ketchikangat
 - **Calendar** — season schedule with crowd coloring and day detail
 - **Activities** — picks filtered for the current crowd level
 - **Weather × Crowds** — 7-day outlook and prediction model explanation
-- **Manage** — CSV import, actuals logging (tunes the model), browser alerts, official port source links
+- **Alerts** — browser notifications on Weather × Crowds (extreme / rain-relief days)
+- **Manage** — admin-only (PocketBase login at `/manage`, hidden from public nav): CSV import, actuals, port sources
 - **PWA** — installable, offline-friendly schedule cache, auto-refresh every 10 minutes
 
 ## Prediction model

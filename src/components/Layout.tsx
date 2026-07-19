@@ -1,17 +1,21 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useAdminAuth } from '../hooks/useAdminAuth'
 import { useGatewayData } from '../hooks/useGatewayData'
 import { GatewayContext } from '../hooks/GatewayContext'
 
-const links = [
+const publicLinks = [
   { to: '/', label: 'Today', end: true },
   { to: '/calendar', label: 'Calendar' },
   { to: '/activities', label: 'Activities' },
   { to: '/insights', label: 'Weather × Crowds' },
-  { to: '/manage', label: 'Manage' },
 ]
 
 export function Layout() {
   const data = useGatewayData()
+  const isAdmin = useAdminAuth()
+  const links = isAdmin
+    ? [...publicLinks, { to: '/manage', label: 'Manage', end: false }]
+    : publicLinks
 
   return (
     <GatewayContext.Provider value={data}>
