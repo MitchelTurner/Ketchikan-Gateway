@@ -21,8 +21,8 @@ export function DayPage() {
 
   useEffect(() => {
     if (!date) return
-    const title = `Ketchikan ${date}: ${day.verdictLabel} · ${day.predictedDowntown.toLocaleString()} ashore`
-    document.title = `${title} | Ketchikan Gateway`
+    const title = `KTN Port ${date}: ${day.verdictLabel} · ${day.predictedDowntown.toLocaleString()} ashore`
+    document.title = `${title} | KTN Port`
     const desc = day.why || 'Cruise passenger forecast for Ketchikan, Alaska.'
     let meta = document.querySelector('meta[name="description"]')
     if (!meta) {
@@ -43,7 +43,7 @@ export function DayPage() {
     }
     setOg('og:title', title)
     setOg('og:description', desc)
-    setOg('og:url', `https://ketchikangateway.org/day/${date}`)
+    setOg('og:url', `https://ktnport.com/day/${date}`)
   }, [date, day])
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -80,9 +80,7 @@ export function DayPage() {
 
       {/* Glanceable share card */}
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-spruce-900 via-channel-700 to-spruce-800 p-6 text-fog-50 shadow-lg">
-        <p className="font-display text-2xl font-semibold text-dawn-400">
-          Ketchikan Gateway
-        </p>
+        <p className="font-display text-2xl font-semibold text-dawn-400">KTN Port</p>
         <p className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">
           {day.verdictLabel}
         </p>

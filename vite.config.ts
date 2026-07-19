@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'ship_visits.json'],
       manifest: {
-        name: 'Ketchikan Gateway',
-        short_name: 'KTN Gateway',
+        name: 'KTN Port',
+        short_name: 'KTN Port',
         description:
           'Daily cruise passenger forecasts for Ketchikan, cross-referenced with weather.',
         theme_color: '#16352f',
@@ -35,10 +35,11 @@ export default defineConfig({
           {
             urlPattern: ({ url }) =>
               url.hostname.includes('open-meteo.com') ||
-              url.hostname.includes('coderick.net'),
+              url.hostname.includes('coderick.net') ||
+              url.hostname.includes('tidesandcurrents.noaa.gov'),
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'ktn-api-cache',
+              cacheName: 'ktn-port-api-cache',
               networkTimeoutSeconds: 8,
               expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 6 },
             },

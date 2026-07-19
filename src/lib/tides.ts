@@ -15,7 +15,7 @@ interface NoaaTidePrediction {
 export async function fetchTides(date: string): Promise<TideEvent[]> {
   const url = new URL('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter')
   url.searchParams.set('product', 'predictions')
-  url.searchParams.set('application', 'ketchikan-gateway')
+  url.searchParams.set('application', 'ktn-port')
   url.searchParams.set('begin_date', date.replace(/-/g, ''))
   url.searchParams.set('end_date', date.replace(/-/g, ''))
   url.searchParams.set('station', TIDE_STATION)

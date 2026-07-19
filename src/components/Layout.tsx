@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { BrandMark, BrandWordmark } from './BrandMark'
 import { useAdminAuth } from '../hooks/useAdminAuth'
 import { useGatewayData } from '../hooks/useGatewayData'
 import { GatewayContext } from '../hooks/GatewayContext'
@@ -23,30 +24,8 @@ export function Layout() {
         <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
             <NavLink to="/" className="group flex items-center gap-2.5 no-underline">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-spruce-900 text-dawn-400 shadow-sm">
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
-                  <path
-                    d="M3 16c4-7 7-10 12-10s8 3 12 10"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M6 18c3-4.5 6-6.5 9-6.5s6 2 9 6.5"
-                    stroke="#7EB8B2"
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-              <span>
-                <span className="block font-display text-[1.05rem] font-semibold leading-none text-spruce-900 group-hover:text-spruce-700">
-                  Ketchikan Gateway
-                </span>
-                <span className="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-fog-500 uppercase">
-                  Passenger forecasts
-                </span>
-              </span>
+              <BrandMark className="h-9 w-9 shrink-0 shadow-sm" />
+              <BrandWordmark />
             </NavLink>
 
             <nav
@@ -79,14 +58,16 @@ export function Layout() {
         </main>
 
         <footer className="mt-auto border-t border-spruce-900/10 bg-spruce-950 text-fog-200">
-          <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-8 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-display text-lg text-fog-50">Ketchikan Gateway</p>
-              <p className="mt-1 max-w-md text-sm text-fog-300">
-                Daily cruise passenger predictions for Ketchikan, cross-referenced with live
-                weather. Install as an app for offline schedule access. Verify official times
-                with the Port of Ketchikan.
-              </p>
+          <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex items-start gap-3">
+              <BrandMark className="h-10 w-10 shrink-0" />
+              <div>
+                <p className="font-display text-lg text-fog-50">KTN Port</p>
+                <p className="mt-1 max-w-md text-sm text-fog-300">
+                  Daily cruise passenger predictions for Ketchikan, cross-referenced with live
+                  weather. ktnport.com — install as an app for offline schedule access.
+                </p>
+              </div>
             </div>
             <p className="text-xs text-fog-400">
               Data: {data.source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}

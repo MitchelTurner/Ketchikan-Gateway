@@ -14,7 +14,7 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
   const share = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'Ketchikan Gateway', text: summary, url })
+        await navigator.share({ title: 'KTN Port', text: summary, url })
         setStatus('Shared.')
         return
       }

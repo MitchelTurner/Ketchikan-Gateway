@@ -36,7 +36,7 @@ export async function requestNotifyPermission(): Promise<NotificationPermission>
 }
 
 function notify(body: string, tag: string) {
-  new Notification('Ketchikan Gateway', {
+  new Notification('KTN Port', {
     body,
     icon: '/favicon.svg',
     tag,

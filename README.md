@@ -1,6 +1,6 @@
-# Ketchikan Gateway
+# KTN Port
 
-Daily cruise passenger forecasts for [ketchikangateway.org](https://ketchikangateway.org) — schedule capacity from the Port of Ketchikan database, cross-referenced with live weather so downtown foot traffic predictions reflect rain, wind, and clear skies.
+Daily cruise passenger forecasts for [ktnport.com](https://ktnport.com) — schedule capacity from the Port of Ketchikan database, cross-referenced with live weather so downtown foot traffic predictions reflect rain, wind, and clear skies.
 
 ## Features
 
