@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { predictDowntownPassengers } from '../lib/prediction'
+import {
+  accuracyStats,
+  calibrationBiasFromLog,
+  syncForecastToLog,
+} from '../lib/accuracy'
+import { maybeNotifyForDay } from '../lib/notifications'
+import { buildDayForecast, emptyDay } from '../lib/prediction'
 import { loadShipVisits } from '../lib/ships'
-import { crowdFromPassengers } from '../lib/utils'
+import { todayInAlaska } from '../lib/utils'
 import { fetchWeatherForecast, seasonalWeather } from '../lib/weather'
 import type { DayForecast, DayWeather, ShipVisit } from '../types'
 
-function dayPassengers(ships: ShipVisit[]): number {
-  const actual = ships.reduce((s, v) => s + (v.actual_passengers || 0), 0)
-  if (actual > 0) return actual
-  return ships.reduce((s, v) => s + (v.estimated_passengers || 0), 0)
-}
+const REFRESH_MS = 10 * 60 * 1000
 
 export function useGatewayData() {
   const [visits, setVisits] = useState<ShipVisit[]>([])
@@ -18,9 +20,12 @@ export function useGatewayData() {
   const [weatherLive, setWeatherLive] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [calibrationBias, setCalibrationBias] = useState(1)
+  const [accuracy, setAccuracy] = useState(accuracyStats())
 
-  const load = useCallback(async () => {
-    setLoading(true)
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true)
     setError(null)
     try {
       const [shipsResult, weatherResult] = await Promise.allSettled([
@@ -41,13 +46,21 @@ export function useGatewayData() {
       } else {
         setWeatherLive(false)
       }
+
+      setCalibrationBias(calibrationBiasFromLog())
+      setAccuracy(accuracyStats())
+      setLastUpdated(new Date())
     } finally {
-      setLoading(false)
+      if (!opts?.silent) setLoading(false)
     }
   }, [])
 
   useEffect(() => {
     void load()
+    const id = window.setInterval(() => {
+      void load({ silent: true })
+    }, REFRESH_MS)
+    return () => window.clearInterval(id)
   }, [load])
 
   const days = useMemo(() => {
@@ -60,25 +73,11 @@ export function useGatewayData() {
 
     const result: DayForecast[] = []
     for (const [date, ships] of byDate) {
-      const sorted = [...ships].sort((a, b) => a.arrival.localeCompare(b.arrival))
-      const scheduledPassengers = dayPassengers(sorted)
       const wx = weather.get(date) ?? seasonalWeather(date)
-      const predictedDowntown = predictDowntownPassengers(
-        scheduledPassengers,
-        wx.ashoreFactor,
-      )
-      result.push({
-        date,
-        ships: sorted,
-        scheduledPassengers,
-        predictedDowntown,
-        crowdLevel: crowdFromPassengers(scheduledPassengers, sorted.length),
-        weatherAdjustedCrowd: crowdFromPassengers(predictedDowntown, sorted.length),
-        weather: wx,
-      })
+      result.push(buildDayForecast(date, ships, wx, calibrationBias))
     }
     return result.sort((a, b) => a.date.localeCompare(b.date))
-  }, [visits, weather])
+  }, [visits, weather, calibrationBias])
 
   const byDate = useMemo(() => {
     const m = new Map<string, DayForecast>()
@@ -89,19 +88,21 @@ export function useGatewayData() {
   const getDay = useCallback(
     (date: string): DayForecast => {
       return (
-        byDate.get(date) ?? {
-          date,
-          ships: [],
-          scheduledPassengers: 0,
-          predictedDowntown: 0,
-          crowdLevel: 'low',
-          weatherAdjustedCrowd: 'low',
-          weather: weather.get(date) ?? seasonalWeather(date),
-        }
+        byDate.get(date) ??
+        emptyDay(date, weather.get(date) ?? seasonalWeather(date))
       )
     },
     [byDate, weather],
   )
+
+  // Log + notify for today when data settles
+  useEffect(() => {
+    if (loading) return
+    const today = getDay(todayInAlaska())
+    syncForecastToLog(today)
+    maybeNotifyForDay(today)
+    setAccuracy(accuracyStats())
+  }, [loading, getDay, days])
 
   const seasonStats = useMemo(() => {
     if (days.length === 0) return null
@@ -116,6 +117,8 @@ export function useGatewayData() {
       extremeDays: days.filter((d) => d.crowdLevel === 'extreme').length,
       busyDays: days.filter((d) => d.crowdLevel === 'busy').length,
       busiestDay: busiest,
+      rainReliefDays: days.filter((d) => d.rainRelief >= 1500 && d.dropsCrowdBand)
+        .length,
     }
   }, [days, visits.length])
 
@@ -127,6 +130,9 @@ export function useGatewayData() {
     source,
     weatherLive,
     seasonStats,
-    refetch: load,
+    lastUpdated,
+    calibrationBias,
+    accuracy,
+    refetch: () => load(),
   }
 }

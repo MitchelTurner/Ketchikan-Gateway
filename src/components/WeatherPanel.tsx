@@ -1,6 +1,29 @@
 import { WEATHER_META } from '../lib/utils'
 import type { DayWeather } from '../types'
 
+function hourLabel(hour: number): string {
+  const h = hour % 12 === 0 ? 12 : hour % 12
+  return `${h}${hour >= 12 ? 'PM' : 'AM'}`
+}
+
+function nextDryWindow(weather: DayWeather): string | null {
+  const hourly = weather.hourly?.filter((h) => h.hour >= 8 && h.hour <= 18) ?? []
+  if (hourly.length === 0) return null
+  const nowHour = Number(
+    new Date().toLocaleString('en-US', {
+      timeZone: 'America/Juneau',
+      hour: 'numeric',
+      hour12: false,
+    }),
+  )
+  const pool = hourly.filter((h) => h.hour >= Math.min(nowHour, 18))
+  const use = pool.length ? pool : hourly
+  const dry = use.find((h) => h.precipMm < 0.2 && h.precipProbability < 40)
+  if (dry) return `Clearest stretch around ${hourLabel(dry.hour)}`
+  const driest = [...use].sort((a, b) => a.precipMm - b.precipMm)[0]
+  return driest ? `Least rain near ${hourLabel(driest.hour)}` : null
+}
+
 function WeatherGlyph({ condition }: { condition: DayWeather['condition'] }) {
   const common = 'h-8 w-8'
   switch (condition) {
@@ -73,6 +96,7 @@ export function WeatherPanel({
   compact?: boolean
 }) {
   const meta = WEATHER_META[weather.condition]
+  const dryTip = nextDryWindow(weather)
 
   if (compact) {
     return (
@@ -125,8 +149,14 @@ export function WeatherPanel({
       </dl>
 
       <p className="mt-4 text-sm leading-relaxed text-channel-700">{meta.crowdEffect}</p>
+      {dryTip && (
+        <p className="mt-2 rounded-lg bg-white/80 px-3 py-2 text-sm font-medium text-spruce-800">
+          {dryTip} — better window to head downtown.
+        </p>
+      )}
       <p className="mt-2 text-[0.7rem] text-fog-400">
         Ashore factor {Math.round(weather.ashoreFactor * 100)}% of scheduled capacity
+        {weather.hourly?.length ? ' · hourly forecast loaded' : ''}
       </p>
     </div>
   )

@@ -1,7 +1,50 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'ship_visits.json'],
+      manifest: {
+        name: 'Ketchikan Gateway',
+        short_name: 'KTN Gateway',
+        description:
+          'Daily cruise passenger forecasts for Ketchikan, cross-referenced with weather.',
+        theme_color: '#16352f',
+        background_color: '#f4f7f8',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        start_url: '/',
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,json,ico,png,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) =>
+              url.hostname.includes('open-meteo.com') ||
+              url.hostname.includes('coderick.net'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'ktn-api-cache',
+              networkTimeoutSeconds: 8,
+              expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 6 },
+            },
+          },
+        ],
+      },
+    }),
+  ],
 })

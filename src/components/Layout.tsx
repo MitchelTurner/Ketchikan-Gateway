@@ -7,6 +7,7 @@ const links = [
   { to: '/calendar', label: 'Calendar' },
   { to: '/activities', label: 'Activities' },
   { to: '/insights', label: 'Weather × Crowds' },
+  { to: '/manage', label: 'Manage' },
 ]
 
 export function Layout() {
@@ -14,7 +15,7 @@ export function Layout() {
 
   return (
     <GatewayContext.Provider value={data}>
-      <div className="min-h-screen flex flex-col">
+      <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
             <NavLink to="/" className="group flex items-center gap-2.5 no-underline">
@@ -44,7 +45,10 @@ export function Layout() {
               </span>
             </NavLink>
 
-            <nav className="flex flex-wrap items-center justify-end gap-1 sm:gap-2" aria-label="Primary">
+            <nav
+              className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
+              aria-label="Primary"
+            >
               {links.map((l) => (
                 <NavLink
                   key={l.to}
@@ -76,13 +80,16 @@ export function Layout() {
               <p className="font-display text-lg text-fog-50">Ketchikan Gateway</p>
               <p className="mt-1 max-w-md text-sm text-fog-300">
                 Daily cruise passenger predictions for Ketchikan, cross-referenced with live
-                weather. Schedule data from the port database — verify official times with the
-                Port of Ketchikan.
+                weather. Install as an app for offline schedule access. Verify official times
+                with the Port of Ketchikan.
               </p>
             </div>
             <p className="text-xs text-fog-400">
               Data: {data.source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
               {data.weatherLive ? ' · weather: Open-Meteo' : ' · weather: seasonal model'}
+              {data.lastUpdated
+                ? ` · refreshed ${data.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Anchorage' })}`
+                : ''}
             </p>
           </div>
         </footer>

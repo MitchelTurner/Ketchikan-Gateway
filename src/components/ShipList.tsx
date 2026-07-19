@@ -1,3 +1,4 @@
+import { berthWeight, shipCapacity, shipSizeWeight } from '../lib/prediction'
 import type { ShipVisit } from '../types'
 
 export function ShipList({ ships }: { ships: ShipVisit[] }) {
@@ -11,34 +12,52 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
 
   return (
     <ul className="divide-y divide-fog-200 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
-      {ships.map((ship) => (
-        <li
-          key={ship.id}
-          className="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-        >
-          <div className="min-w-0">
-            <p className="font-display text-lg font-semibold text-spruce-900 truncate">
-              {ship.ship}
-            </p>
-            <p className="mt-0.5 text-sm text-fog-500">
-              {ship.arrival}–{ship.departure}
-              {ship.berth ? ` · Berth ${ship.berth}` : ''}
-              {ship.direction ? ` · ${ship.direction === 'N' ? 'Northbound' : ship.direction === 'S' ? 'Southbound' : ship.direction}` : ''}
-            </p>
-            {ship.popularity_notes ? (
-              <p className="mt-1 text-xs text-fog-400">{ship.popularity_notes}</p>
-            ) : null}
-          </div>
-          <div className="shrink-0 text-left sm:text-right">
-            <p className="font-display text-xl font-semibold tabular-nums text-channel-700">
-              {(ship.actual_passengers || ship.estimated_passengers).toLocaleString()}
-            </p>
-            <p className="text-[0.7rem] font-medium tracking-wide text-fog-400 uppercase">
-              {ship.actual_passengers > 0 ? 'actual' : 'estimated'} pax
-            </p>
-          </div>
-        </li>
-      ))}
+      {ships.map((ship) => {
+        const cap = shipCapacity(ship)
+        const sizeW = shipSizeWeight(cap)
+        const berthW = berthWeight(ship.berth)
+        const weighted = Math.round(cap * sizeW * berthW)
+        return (
+          <li
+            key={ship.id}
+            className="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-display text-lg font-semibold text-spruce-900">
+                {ship.ship}
+              </p>
+              <p className="mt-0.5 text-sm text-fog-500">
+                {ship.arrival}–{ship.departure}
+                {ship.berth ? ` · Berth ${ship.berth}` : ''}
+                {ship.direction
+                  ? ` · ${ship.direction === 'N' ? 'Northbound' : ship.direction === 'S' ? 'Southbound' : ship.direction}`
+                  : ''}
+              </p>
+              <p className="mt-1 text-[0.7rem] text-fog-400">
+                Weight ×{(sizeW * berthW).toFixed(2)}
+                {sizeW > 1 ? ' · mega-ship' : sizeW < 0.9 ? ' · expedition' : ''}
+                {berthW < 1 ? ' · off-dock' : ''}
+              </p>
+              {ship.popularity_notes ? (
+                <p className="mt-1 text-xs text-fog-400">{ship.popularity_notes}</p>
+              ) : null}
+            </div>
+            <div className="shrink-0 text-left sm:text-right">
+              <p className="font-display text-xl font-semibold tabular-nums text-channel-700">
+                {cap.toLocaleString()}
+              </p>
+              <p className="text-[0.7rem] font-medium tracking-wide text-fog-400 uppercase">
+                {ship.actual_passengers > 0 ? 'actual' : 'estimated'} pax
+              </p>
+              {weighted !== cap && (
+                <p className="text-[0.65rem] text-fog-400">
+                  weighted {weighted.toLocaleString()}
+                </p>
+              )}
+            </div>
+          </li>
+        )
+      })}
     </ul>
   )
 }

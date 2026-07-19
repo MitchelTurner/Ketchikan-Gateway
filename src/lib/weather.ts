@@ -1,4 +1,4 @@
-import type { DayWeather } from '../types'
+import type { DayWeather, HourlyWeatherPoint } from '../types'
 import { ashoreFactor } from './prediction'
 import { cToF, kmhToMph, wmoToCondition } from './utils'
 
@@ -15,7 +15,16 @@ interface OpenMeteoDaily {
   windspeed_10m_max: number[]
 }
 
-export async function fetchWeatherForecast(days = 14): Promise<Map<string, DayWeather>> {
+interface OpenMeteoHourly {
+  time: string[]
+  weather_code: number[]
+  temperature_2m: number[]
+  precipitation: number[]
+  precipitation_probability: number[]
+  windspeed_10m: number[]
+}
+
+export async function fetchWeatherForecast(days = 16): Promise<Map<string, DayWeather>> {
   const url = new URL('https://api.open-meteo.com/v1/forecast')
   url.searchParams.set('latitude', String(LAT))
   url.searchParams.set('longitude', String(LON))
@@ -23,15 +32,46 @@ export async function fetchWeatherForecast(days = 14): Promise<Map<string, DayWe
     'daily',
     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,windspeed_10m_max',
   )
+  url.searchParams.set(
+    'hourly',
+    'weather_code,temperature_2m,precipitation,precipitation_probability,windspeed_10m',
+  )
   url.searchParams.set('timezone', 'America/Juneau')
-  url.searchParams.set('forecast_days', String(days))
+  url.searchParams.set('forecast_days', String(Math.min(days, 16)))
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Weather API ${res.status}`)
-  const json = (await res.json()) as { daily: OpenMeteoDaily }
+  const json = (await res.json()) as {
+    daily: OpenMeteoDaily
+    hourly: OpenMeteoHourly
+  }
+
+  const hourlyByDate = new Map<string, HourlyWeatherPoint[]>()
+  const h = json.hourly
+  for (let i = 0; i < h.time.length; i++) {
+    const iso = h.time[i]
+    const [date, time] = iso.split('T')
+    const hour = Number((time ?? '00:00').slice(0, 2))
+    const condition = wmoToCondition(h.weather_code[i] ?? 3)
+    const precipMm = h.precipitation[i] ?? 0
+    const precipProbability = h.precipitation_probability[i] ?? 0
+    const point: HourlyWeatherPoint = {
+      time: iso,
+      hour,
+      condition,
+      tempF: cToF(h.temperature_2m[i] ?? 15),
+      precipMm,
+      precipProbability,
+      windMph: kmhToMph(h.windspeed_10m[i] ?? 10),
+      ashoreFactor: ashoreFactor(condition, precipMm, precipProbability),
+    }
+    const list = hourlyByDate.get(date) ?? []
+    list.push(point)
+    hourlyByDate.set(date, list)
+  }
+
   const d = json.daily
   const map = new Map<string, DayWeather>()
-
   for (let i = 0; i < d.time.length; i++) {
     const condition = wmoToCondition(d.weather_code[i] ?? 3)
     const precipMm = d.precipitation_sum[i] ?? 0
@@ -45,6 +85,7 @@ export async function fetchWeatherForecast(days = 14): Promise<Map<string, DayWe
       precipProbability,
       windMph: kmhToMph(d.windspeed_10m_max[i] ?? 10),
       ashoreFactor: ashoreFactor(condition, precipMm, precipProbability),
+      hourly: hourlyByDate.get(d.time[i]) ?? [],
     })
   }
 
@@ -55,7 +96,8 @@ export async function fetchWeatherForecast(days = 14): Promise<Map<string, DayWe
 export function seasonalWeather(date: string): DayWeather {
   const month = Number(date.split('-')[1])
   const seed = [...date].reduce((a, c) => a + c.charCodeAt(0), 0)
-  const baseTemp = ({ 5: 52, 6: 56, 7: 59, 8: 58, 9: 54 }[month] ?? 55) + (seed % 13) - 6
+  const baseTemp =
+    ({ 5: 52, 6: 56, 7: 59, 8: 58, 9: 54 }[month] ?? 55) + (seed % 13) - 6
   const roll = seed % 100
   const condition =
     roll < 8
@@ -81,14 +123,37 @@ export function seasonalWeather(date: string): DayWeather {
     storm: 30 + (seed % 25),
   } as const
   const precipMm = precipBy[condition]
+  const factor = ashoreFactor(condition, precipMm, 50)
+
+  const hourly: HourlyWeatherPoint[] = []
+  for (let hour = 0; hour < 24; hour++) {
+    const hourPrecip =
+      condition.includes('rain') || condition === 'storm'
+        ? precipMm / 10 + ((seed + hour) % 5) * 0.1
+        : 0
+    hourly.push({
+      time: `${date}T${String(hour).padStart(2, '0')}:00`,
+      hour,
+      condition,
+      tempF: baseTemp + (hour > 10 && hour < 16 ? 3 : -1),
+      precipMm: hourPrecip,
+      precipProbability:
+        condition.includes('rain') || condition === 'storm' ? 70 : 30,
+      windMph: condition === 'storm' ? 25 : condition === 'heavy-rain' ? 15 : 8,
+      ashoreFactor: ashoreFactor(condition, hourPrecip, 50),
+    })
+  }
+
   return {
     date,
     condition,
     tempHighF: baseTemp + 3,
     tempLowF: baseTemp - 3,
     precipitationMm: precipMm,
-    precipProbability: condition.includes('rain') || condition === 'storm' ? 70 : 30,
+    precipProbability:
+      condition.includes('rain') || condition === 'storm' ? 70 : 30,
     windMph: condition === 'storm' ? 25 : condition === 'heavy-rain' ? 15 : 8,
-    ashoreFactor: ashoreFactor(condition, precipMm, 50),
+    ashoreFactor: factor,
+    hourly,
   }
 }

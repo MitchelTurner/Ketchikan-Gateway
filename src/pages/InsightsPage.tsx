@@ -5,7 +5,7 @@ import { useGateway } from '../hooks/GatewayContext'
 import { addDays, formatShortDate, todayInAlaska, WEATHER_META } from '../lib/utils'
 
 export function InsightsPage() {
-  const { getDay, days, weatherLive } = useGateway()
+  const { getDay, days, weatherLive, calibrationBias, accuracy } = useGateway()
   const today = todayInAlaska()
 
   const outlook = useMemo(() => {
@@ -14,13 +14,8 @@ export function InsightsPage() {
 
   const rainRelief = useMemo(() => {
     return days
-      .filter((d) => d.ships.length > 0 && d.weather && d.scheduledPassengers > 8000)
-      .map((d) => ({
-        ...d,
-        saved: d.scheduledPassengers - d.predictedDowntown,
-      }))
-      .filter((d) => d.saved > 1500)
-      .sort((a, b) => b.saved - a.saved)
+      .filter((d) => d.ships.length > 0 && d.rainRelief > 1500)
+      .sort((a, b) => b.rainRelief - a.rainRelief)
       .slice(0, 6)
   }, [days])
 
@@ -32,16 +27,24 @@ export function InsightsPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-fog-600">
           Ship capacity is only half the story. Rain keeps guests aboard and cancels outdoor
-          excursions — so downtown foot traffic often runs below the schedule. We apply an
-          ashore factor from live Ketchikan weather
-          {weatherLive ? '' : ' (seasonal model today)'} to predict how busy town will feel.
+          excursions — so downtown foot traffic often runs below the schedule. Live Ketchikan
+          weather{weatherLive ? '' : ' (seasonal model)'} plus ship/berth weights and a
+          calibration bias of ×{calibrationBias.toFixed(2)} drive the prediction.
         </p>
       </div>
+
+      {accuracy.samples > 0 && (
+        <p className="rounded-xl border border-spruce-200 bg-spruce-50 px-4 py-3 text-sm text-spruce-800">
+          Model accuracy from {accuracy.samples} logged days with actuals: mean error{' '}
+          {accuracy.meanAbsError.toLocaleString()} passengers ({accuracy.meanAbsPercentError}
+          %).
+        </p>
+      )}
 
       <section>
         <h2 className="font-display text-xl font-semibold text-spruce-900">7-day outlook</h2>
         <p className="mt-1 text-sm text-fog-500">
-          Scheduled capacity vs weather-adjusted passengers ashore.
+          Scheduled capacity vs weather-adjusted passengers ashore, with downtown verdict.
         </p>
         <ul className="mt-4 divide-y divide-fog-200 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
           {outlook.map((day) => {
@@ -52,15 +55,24 @@ export function InsightsPage() {
                 key={day.date}
                 className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="min-w-0 sm:w-40">
+                <div className="min-w-0 sm:w-44">
                   <p className="font-semibold text-spruce-900">{formatShortDate(day.date)}</p>
                   <p className="text-xs text-fog-500">
                     {day.ships.length} ship{day.ships.length === 1 ? '' : 's'}
+                    {day.peakHour != null ? ` · peak ~${day.peakHour}:00` : ''}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-spruce-700">
+                    {day.ships.length ? day.verdictLabel : 'Quiet'}
                   </p>
                 </div>
                 <div className="flex flex-1 flex-wrap items-center gap-3">
                   <WeatherPanel weather={wx} compact />
                   <span className="text-xs text-fog-500">{meta.crowdEffect}</span>
+                  {day.rainRelief >= 1200 && (
+                    <span className="rounded-full bg-channel-50 px-2 py-0.5 text-[0.65rem] font-semibold text-channel-700">
+                      −{day.rainRelief.toLocaleString()} vs clear
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 sm:text-right">
                   <div>
@@ -100,17 +112,26 @@ export function InsightsPage() {
         </h2>
         <ol className="mt-4 space-y-3 text-sm leading-relaxed text-fog-700">
           <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
-            <strong className="text-spruce-900">1. Schedule capacity</strong> — sum each ship’s
-            estimated (or confirmed actual) passengers for the day.
+            <strong className="text-spruce-900">1. Schedule + weights</strong> — sum estimated
+            (or actual) passengers, then weight mega-ships higher and expedition / anchorage
+            calls lower.
           </li>
           <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
             <strong className="text-spruce-900">2. Weather ashore factor</strong> — sunny ~95%
-            ashore; light rain ~72%; heavy rain ~42%; storms ~30%, with extra dampening for high
-            precip totals.
+            ashore; light rain ~72%; heavy rain ~42%; storms ~30%, with hourly precip when
+            available.
           </li>
           <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
-            <strong className="text-spruce-900">3. Crowd band</strong> — predicted downtown
-            passengers map to Low (≤3k), Moderate (≤6k), Busy (≤10k), or Extreme (&gt;10k).
+            <strong className="text-spruce-900">3. Hourly curve</strong> — passengers ramp up
+            after arrival and reboard before departure to find the peak downtown window.
+          </li>
+          <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
+            <strong className="text-spruce-900">4. Calibration</strong> — predicted vs actual
+            logs (Manage → actuals) tune a bias (currently ×{calibrationBias.toFixed(2)}).
+          </li>
+          <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
+            <strong className="text-spruce-900">5. Crowd band</strong> — Low ≤3k, Moderate ≤6k,
+            Busy ≤10k, Extreme &gt;10k → Quiet / Okay / Avoid 10–2.
           </li>
         </ol>
       </section>
@@ -132,10 +153,10 @@ export function InsightsPage() {
                 <p className="font-semibold text-spruce-900">{formatShortDate(d.date)}</p>
                 <p className="mt-1 text-sm text-fog-600">
                   {d.scheduledPassengers.toLocaleString()} scheduled →{' '}
-                  {d.predictedDowntown.toLocaleString()} predicted
+                  {d.predictedDowntown.toLocaleString()} predicted · {d.verdictLabel}
                 </p>
                 <p className="mt-2 font-display text-2xl font-semibold text-channel-700 tabular-nums">
-                  −{d.saved.toLocaleString()}
+                  −{d.rainRelief.toLocaleString()}
                 </p>
                 <p className="text-xs text-fog-500">fewer ashore vs clear weather</p>
               </li>

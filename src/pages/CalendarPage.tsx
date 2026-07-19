@@ -145,7 +145,11 @@ export function CalendarPage() {
           <p className="text-sm text-fog-500">
             {selectedDay.ships.length} ship{selectedDay.ships.length === 1 ? '' : 's'} ·{' '}
             {selectedDay.predictedDowntown.toLocaleString()} predicted ashore
+            {selectedDay.ships.length > 0 ? ` · ${selectedDay.verdictLabel}` : ''}
           </p>
+          {selectedDay.ships.length > 0 && (
+            <p className="mt-1 text-xs text-fog-500">{selectedDay.why}</p>
+          )}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <CrowdMeter
@@ -155,6 +159,12 @@ export function CalendarPage() {
           />
           {selectedDay.weather && <WeatherPanel weather={selectedDay.weather} />}
         </div>
+        {selectedDay.rainRelief >= 1200 && (
+          <p className="rounded-xl border border-channel-200 bg-channel-50 px-4 py-3 text-sm text-channel-700">
+            Rain relief: ~{selectedDay.rainRelief.toLocaleString()} fewer ashore than a clear
+            day.
+          </p>
+        )}
         <ShipList ships={selectedDay.ships} />
       </section>
     </div>

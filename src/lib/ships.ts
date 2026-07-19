@@ -1,12 +1,13 @@
 import PocketBase from 'pocketbase'
 import type { ShipVisit } from '../types'
+import { applyActualOverrides } from './actualOverrides'
 
 const PB_URL =
   import.meta.env.VITE_POCKETBASE_URL ?? 'https://vc956574645937.coderick.net'
 
 export const pb = new PocketBase(PB_URL)
 
-function normalizeVisit(raw: Record<string, unknown>): ShipVisit {
+export function normalizeVisit(raw: Record<string, unknown>): ShipVisit {
   const date = String(raw.date ?? '')
     .split(' ')[0]
     .split('T')[0]
@@ -47,10 +48,59 @@ export async function loadShipVisits(): Promise<{
   try {
     const visits = await fetchFromPocketBase()
     if (visits.length === 0) throw new Error('Empty PocketBase response')
-    return { visits, source: 'pocketbase' }
+    return { visits: applyActualOverrides(visits), source: 'pocketbase' }
   } catch (err) {
     console.warn('PocketBase unavailable, using bundled schedule', err)
     const visits = await fetchLocalFallback()
-    return { visits, source: 'local' }
+    return { visits: applyActualOverrides(visits), source: 'local' }
   }
+}
+
+export async function loginAdmin(email: string, password: string) {
+  return pb.collection('users').authWithPassword(email, password)
+}
+
+export function logoutAdmin() {
+  pb.authStore.clear()
+}
+
+export function isAdminAuthed(): boolean {
+  return pb.authStore.isValid
+}
+
+export async function updateVisitActual(id: string, actual: number) {
+  return pb.collection('ship_visits').update(id, { actual_passengers: actual })
+}
+
+export async function createShipVisit(visit: Omit<ShipVisit, 'id'>) {
+  return pb.collection('ship_visits').create({
+    date: visit.date,
+    ship: visit.ship,
+    arrival: visit.arrival,
+    departure: visit.departure,
+    berth: visit.berth,
+    direction: visit.direction,
+    estimated_passengers: visit.estimated_passengers,
+    actual_passengers: visit.actual_passengers,
+    notes: visit.notes,
+    popularity_notes: visit.popularity_notes,
+  })
+}
+
+export async function importVisitsToPocketBase(
+  rows: Omit<ShipVisit, 'id'>[],
+): Promise<{ created: number; errors: string[] }> {
+  let created = 0
+  const errors: string[] = []
+  for (const row of rows) {
+    try {
+      await createShipVisit(row)
+      created += 1
+    } catch (e) {
+      errors.push(
+        `${row.date} ${row.ship}: ${e instanceof Error ? e.message : 'failed'}`,
+      )
+    }
+  }
+  return { created, errors }
 }
