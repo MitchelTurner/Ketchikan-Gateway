@@ -1,3 +1,5 @@
+import { predictionConfidence } from './compareDays'
+import { inferLineProfile, lineProfileWeight } from './shipProfiles'
 import type {
   CrowdLevel,
   DayForecast,
@@ -64,8 +66,18 @@ export function shipCapacity(ship: ShipVisit): number {
 }
 
 export function weightedShipPassengers(ship: ShipVisit): number {
+  if (ship.cancelled) return 0
   const cap = shipCapacity(ship)
-  return Math.round(cap * shipSizeWeight(cap) * berthWeight(ship.berth))
+  return Math.round(
+    cap * shipSizeWeight(cap) * berthWeight(ship.berth) * lineProfileWeight(ship.ship),
+  )
+}
+
+export function enrichShip(ship: ShipVisit): ShipVisit {
+  return {
+    ...ship,
+    lineProfile: ship.lineProfile ?? inferLineProfile(ship.ship),
+  }
 }
 
 export function sumScheduled(ships: ShipVisit[]): number {
@@ -221,7 +233,10 @@ export function buildDayForecast(
   weather: DayWeather,
   calibrationBias = 1,
 ): DayForecast {
-  const sorted = [...ships].sort((a, b) => a.arrival.localeCompare(b.arrival))
+  const enriched = ships.map(enrichShip)
+  const cancelledCount = enriched.filter((s) => s.cancelled).length
+  const active = enriched.filter((s) => !s.cancelled)
+  const sorted = [...active].sort((a, b) => a.arrival.localeCompare(b.arrival))
   const scheduledPassengers = sumScheduled(sorted)
   const weightedScheduled = sumWeighted(sorted)
   const actualTotal = sumActuals(sorted)
@@ -266,7 +281,7 @@ export function buildDayForecast(
     peakHour,
   )
 
-  return {
+  const draft: DayForecast = {
     date,
     ships: sorted,
     scheduledPassengers,
@@ -294,6 +309,19 @@ export function buildDayForecast(
     }),
     hasActuals,
     actualTotal,
+    confidence: 'medium',
+    confidenceLabel: 'Medium confidence',
+    confidenceDetail: '',
+    cancelledCount,
+  }
+
+  const conf = predictionConfidence(draft)
+  return {
+    ...draft,
+    confidence: conf.level,
+    confidenceLabel: conf.label,
+    confidenceDetail: conf.detail,
+    ships: enriched.sort((a, b) => a.arrival.localeCompare(b.arrival)),
   }
 }
 

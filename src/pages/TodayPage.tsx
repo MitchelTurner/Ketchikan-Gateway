@@ -1,15 +1,22 @@
 import { Link } from 'react-router-dom'
 import { CapacitySplit } from '../components/CapacitySplit'
+import { ConfidenceBadge } from '../components/ConfidenceBadge'
 import { CrowdMeter } from '../components/CrowdMeter'
 import { DowntownVerdictBanner } from '../components/DowntownVerdict'
 import { HourlyCrowdChart } from '../components/HourlyCrowdChart'
 import { LastUpdated } from '../components/LastUpdated'
+import { LastVerifiedBanner } from '../components/LastVerified'
+import { MarinePanel } from '../components/MarinePanel'
+import { QuietHoursMap } from '../components/QuietHoursMap'
 import { RainReliefBanner } from '../components/RainReliefBanner'
+import { RightNowPanel } from '../components/RightNow'
+import { ShareDayButton } from '../components/ShareDayButton'
 import { ShipList } from '../components/ShipList'
+import { TomorrowCompare } from '../components/TomorrowCompare'
 import { WeatherPanel } from '../components/WeatherPanel'
 import { WhyThisNumber } from '../components/WhyThisNumber'
 import { useGateway } from '../hooks/GatewayContext'
-import { formatLongDate, todayInAlaska } from '../lib/utils'
+import { addDays, formatLongDate, todayInAlaska } from '../lib/utils'
 
 export function TodayPage() {
   const {
@@ -23,7 +30,9 @@ export function TodayPage() {
   } = useGateway()
   const today = todayInAlaska()
   const day = getDay(today)
+  const tomorrow = getDay(addDays(today, 1))
   const weather = day.weather!
+  const activeShips = day.ships.filter((s) => !s.cancelled)
 
   return (
     <div>
@@ -48,43 +57,54 @@ export function TodayPage() {
           <h1 className="animate-rise-delay-1 mt-4 max-w-2xl font-display text-2xl font-medium leading-snug text-fog-50 sm:text-3xl">
             {loading
               ? 'Loading today’s passenger forecast…'
-              : day.ships.length === 0
+              : activeShips.length === 0
                 ? 'No cruise ships in port today.'
                 : day.verdict === 'avoid'
                   ? `${day.verdictLabel} — ${day.predictedDowntown.toLocaleString()} predicted ashore`
                   : `${day.predictedDowntown.toLocaleString()} passengers predicted ashore`}
           </h1>
           <p className="animate-rise-delay-2 mt-3 max-w-xl text-base text-channel-200 sm:text-lg">
-            {formatLongDate(today)}. {day.ships.length > 0 ? day.why : 'Quiet waterfront.'}
+            {formatLongDate(today)}. {activeShips.length > 0 ? day.why : 'Quiet waterfront.'}
           </p>
           <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
             <a
-              href="#today-detail"
+              href="#right-now"
               className="rounded-full bg-dawn-400 px-5 py-2.5 text-sm font-semibold text-spruce-950 no-underline transition hover:bg-dawn-100"
             >
-              See ships & hourly curve
+              Right now
             </a>
             <Link
-              to="/insights"
+              to={`/day/${today}`}
               className="rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-fog-50 no-underline backdrop-blur transition hover:bg-white/20"
             >
-              Weather × crowds
+              Shareable day card
             </Link>
           </div>
         </div>
       </section>
 
       <div id="today-detail" className="mx-auto max-w-5xl space-y-8 px-4 py-10">
-        <LastUpdated
-          at={lastUpdated}
-          source={source}
-          weatherLive={weatherLive}
-          onRefresh={() => void refetch()}
-          loading={loading}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <LastUpdated
+            at={lastUpdated}
+            source={source}
+            weatherLive={weatherLive}
+            onRefresh={() => void refetch()}
+            loading={loading}
+          />
+          <ShareDayButton day={day} />
+        </div>
+        <LastVerifiedBanner />
 
-        {day.ships.length > 0 && <DowntownVerdictBanner day={day} />}
+        <div id="right-now">
+          <RightNowPanel day={day} />
+        </div>
+
+        <TomorrowCompare today={day} tomorrow={tomorrow} />
+
+        {activeShips.length > 0 && <DowntownVerdictBanner day={day} />}
         <RainReliefBanner day={day} />
+        <ConfidenceBadge day={day} />
 
         <section className="grid gap-4 md:grid-cols-2">
           <CrowdMeter
@@ -98,9 +118,12 @@ export function TodayPage() {
         <CapacitySplit day={day} />
         <WhyThisNumber why={day.why || 'No ships scheduled.'} />
 
-        {day.ships.length > 0 && (
+        {activeShips.length > 0 && (
           <HourlyCrowdChart points={day.hourlyCrowd} peakHour={day.peakHour} />
         )}
+
+        <MarinePanel date={today} />
+        <QuietHoursMap level={day.weatherAdjustedCrowd} />
 
         <section>
           <div className="mb-4 flex items-end justify-between gap-3">
@@ -109,9 +132,10 @@ export function TodayPage() {
                 Ships in port
               </h2>
               <p className="text-sm text-fog-500">
-                {day.ships.length === 0
+                {activeShips.length === 0
                   ? 'Quiet waterfront today.'
-                  : `${day.ships.length} vessel${day.ships.length === 1 ? '' : 's'} · weighted for size & berth`}
+                  : `${activeShips.length} active · weighted by size, berth & line style`}
+                {day.cancelledCount > 0 ? ` · ${day.cancelledCount} cancelled` : ''}
               </p>
             </div>
             <CrowdMeter

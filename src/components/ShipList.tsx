@@ -1,4 +1,6 @@
+import { LINE_PROFILE_META } from '../lib/shipProfiles'
 import { berthWeight, shipCapacity, shipSizeWeight } from '../lib/prediction'
+import { inferLineProfile } from '../lib/shipProfiles'
 import type { ShipVisit } from '../types'
 
 export function ShipList({ ships }: { ships: ShipVisit[] }) {
@@ -16,15 +18,28 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
         const cap = shipCapacity(ship)
         const sizeW = shipSizeWeight(cap)
         const berthW = berthWeight(ship.berth)
-        const weighted = Math.round(cap * sizeW * berthW)
+        const profile = ship.lineProfile ?? inferLineProfile(ship.ship)
+        const profileMeta = LINE_PROFILE_META[profile]
+        const weighted = Math.round(
+          cap * sizeW * berthW * profileMeta.downtownWeight,
+        )
         return (
           <li
             key={ship.id}
-            className="flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+            className={[
+              'flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4',
+              ship.cancelled ? 'opacity-50' : '',
+            ].join(' ')}
           >
             <div className="min-w-0">
-              <p className="truncate font-display text-lg font-semibold text-spruce-900">
+              <p
+                className={[
+                  'truncate font-display text-lg font-semibold text-spruce-900',
+                  ship.cancelled ? 'line-through' : '',
+                ].join(' ')}
+              >
                 {ship.ship}
+                {ship.cancelled ? ' (cancelled)' : ''}
               </p>
               <p className="mt-0.5 text-sm text-fog-500">
                 {ship.arrival}–{ship.departure}
@@ -34,8 +49,8 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
                   : ''}
               </p>
               <p className="mt-1 text-[0.7rem] text-fog-400">
-                Weight ×{(sizeW * berthW).toFixed(2)}
-                {sizeW > 1 ? ' · mega-ship' : sizeW < 0.9 ? ' · expedition' : ''}
+                {profileMeta.label}
+                {sizeW > 1 ? ' · mega-ship' : sizeW < 0.9 ? ' · expedition size' : ''}
                 {berthW < 1 ? ' · off-dock' : ''}
               </p>
               {ship.popularity_notes ? (
@@ -44,12 +59,17 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
             </div>
             <div className="shrink-0 text-left sm:text-right">
               <p className="font-display text-xl font-semibold tabular-nums text-channel-700">
-                {cap.toLocaleString()}
+                {ship.cancelled ? '—' : cap.toLocaleString()}
               </p>
               <p className="text-[0.7rem] font-medium tracking-wide text-fog-400 uppercase">
-                {ship.actual_passengers > 0 ? 'actual' : 'estimated'} pax
+                {ship.cancelled
+                  ? 'cancelled'
+                  : ship.actual_passengers > 0
+                    ? 'actual'
+                    : 'estimated'}{' '}
+                pax
               </p>
-              {weighted !== cap && (
+              {!ship.cancelled && weighted !== cap && (
                 <p className="text-[0.65rem] text-fog-400">
                   weighted {weighted.toLocaleString()}
                 </p>

@@ -11,6 +11,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Most tour buses arrive 10 AM–2 PM. Go before 9 AM or after ships leave.',
     location: '10 miles north of downtown',
     duration: '1–2 hours',
+    cruiseSensitivity: 'high',
+    quietHours: 'Before 9 AM or after 3 PM',
   },
   {
     id: '2',
@@ -22,6 +24,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Off the typical cruise excursion route. Ideal on heavy ship days.',
     location: 'Near downtown, off Park Avenue',
     duration: '1–1.5 hours',
+    cruiseSensitivity: 'low',
+    quietHours: 'Any time',
   },
   {
     id: '3',
@@ -33,6 +37,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Most cruise passengers stick to easy walks. Climb higher for solitude.',
     location: 'Trailhead near downtown',
     duration: '3–5 hours',
+    cruiseSensitivity: 'low',
+    quietHours: 'Any time after the first mile',
   },
   {
     id: '4',
@@ -44,6 +50,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'The #1 cruise attraction. On busy days, visit at dawn or after departure.',
     location: 'Downtown waterfront',
     duration: '1–2 hours',
+    cruiseSensitivity: 'high',
+    quietHours: 'Before 8 AM or after 4 PM',
   },
   {
     id: '5',
@@ -55,6 +63,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Book early slots. Most cruise kayak excursions go out 9–11 AM.',
     location: 'Various launch points',
     duration: '2–4 hours',
+    cruiseSensitivity: 'medium',
+    quietHours: 'Before 9 AM',
   },
   {
     id: '6',
@@ -65,6 +75,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Peak rush noon–2 PM on ship days. Beat it early or late.',
     location: 'Near cruise ship dock',
     duration: '45 min–1 hour',
+    cruiseSensitivity: 'high',
+    quietHours: 'Before 11:30 AM or after 2:30 PM',
   },
   {
     id: '7',
@@ -76,6 +88,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Afternoons are quieter and more intimate than morning bus waves.',
     location: '2.5 miles south of downtown',
     duration: '1.5–2 hours',
+    cruiseSensitivity: 'medium',
+    quietHours: 'After 2 PM',
   },
   {
     id: '8',
@@ -87,6 +101,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Tours pack platforms midday. Go independently early or late.',
     location: '8 miles south of downtown',
     duration: '1–3 hours',
+    cruiseSensitivity: 'medium',
+    quietHours: 'Early morning or evening',
   },
   {
     id: '9',
@@ -97,6 +113,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Cruise passengers rarely venture here. Peaceful even on peak days.',
     location: 'Off Mission Street',
     duration: '1–2 hours',
+    cruiseSensitivity: 'low',
+    quietHours: 'Any time',
   },
   {
     id: '10',
@@ -107,6 +125,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Not on cruise excursion routes. Always quiet on extreme crowd days.',
     location: '7 miles north of town',
     duration: '1–3 hours',
+    cruiseSensitivity: 'low',
+    quietHours: 'Any time',
   },
   {
     id: '11',
@@ -118,6 +138,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Quieter at midday while tourists flock outdoors first.',
     location: 'Downtown, 50 Main Street',
     duration: '1–2 hours',
+    cruiseSensitivity: 'medium',
+    quietHours: 'Midday counter-programming',
   },
   {
     id: '12',
@@ -129,6 +151,8 @@ export const ACTIVITIES: Activity[] = [
     crowdTip: 'Mid-morning fills with cruise groups. Early and late runs feel smaller.',
     location: 'Herring Cove area',
     duration: '2–3 hours',
+    cruiseSensitivity: 'medium',
+    quietHours: 'First or last slot',
   },
 ]
 

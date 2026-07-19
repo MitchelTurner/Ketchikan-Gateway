@@ -1,6 +1,8 @@
 import PocketBase from 'pocketbase'
 import type { ShipVisit } from '../types'
 import { applyActualOverrides } from './actualOverrides'
+import { applyCancellations } from './cancellations'
+import { inferLineProfile } from './shipProfiles'
 
 const PB_URL =
   import.meta.env.VITE_POCKETBASE_URL ?? 'https://vc956574645937.coderick.net'
@@ -11,10 +13,11 @@ export function normalizeVisit(raw: Record<string, unknown>): ShipVisit {
   const date = String(raw.date ?? '')
     .split(' ')[0]
     .split('T')[0]
+  const ship = String(raw.ship ?? '')
   return {
     id: String(raw.id ?? ''),
     date,
-    ship: String(raw.ship ?? ''),
+    ship,
     arrival: String(raw.arrival ?? ''),
     departure: String(raw.departure ?? ''),
     berth: String(raw.berth ?? ''),
@@ -23,6 +26,8 @@ export function normalizeVisit(raw: Record<string, unknown>): ShipVisit {
     actual_passengers: Number(raw.actual_passengers ?? 0),
     notes: String(raw.notes ?? ''),
     popularity_notes: String(raw.popularity_notes ?? ''),
+    lineProfile: inferLineProfile(ship),
+    cancelled: Boolean(raw.cancelled),
   }
 }
 
@@ -48,11 +53,17 @@ export async function loadShipVisits(): Promise<{
   try {
     const visits = await fetchFromPocketBase()
     if (visits.length === 0) throw new Error('Empty PocketBase response')
-    return { visits: applyActualOverrides(visits), source: 'pocketbase' }
+    return {
+      visits: applyCancellations(applyActualOverrides(visits)),
+      source: 'pocketbase',
+    }
   } catch (err) {
     console.warn('PocketBase unavailable, using bundled schedule', err)
     const visits = await fetchLocalFallback()
-    return { visits: applyActualOverrides(visits), source: 'local' }
+    return {
+      visits: applyCancellations(applyActualOverrides(visits)),
+      source: 'local',
+    }
   }
 }
 

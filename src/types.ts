@@ -11,6 +11,12 @@ export type WeatherCondition =
 
 export type DowntownVerdict = 'quiet' | 'okay' | 'avoid'
 
+export type ShipLineProfile = 'shopping' | 'excursion' | 'expedition' | 'mixed'
+
+export type ConfidenceLevel = 'high' | 'medium' | 'low'
+
+export type GoAdvice = 'go-now' | 'wait' | 'good-anytime'
+
 export interface ShipVisit {
   id: string
   date: string
@@ -23,6 +29,8 @@ export interface ShipVisit {
   actual_passengers: number
   notes: string
   popularity_notes: string
+  cancelled?: boolean
+  lineProfile?: ShipLineProfile
 }
 
 export interface HourlyCrowdPoint {
@@ -80,6 +88,10 @@ export interface DayForecast {
   why: string
   hasActuals: boolean
   actualTotal: number
+  confidence: ConfidenceLevel
+  confidenceLabel: string
+  confidenceDetail: string
+  cancelledCount: number
 }
 
 export interface Activity {
@@ -91,6 +103,9 @@ export interface Activity {
   crowdTip: string
   location: string
   duration: string
+  /** How cruise-sensitive this spot is downtown (high = avoid peak) */
+  cruiseSensitivity: 'high' | 'medium' | 'low'
+  quietHours: string
 }
 
 export interface PredictionLogEntry {
@@ -107,5 +122,23 @@ export interface NotifyPrefs {
   enabled: boolean
   extremeDays: boolean
   rainRelief: boolean
+  morningDigest: boolean
   lastNotifiedDate: string | null
+  lastDigestDate: string | null
+}
+
+export interface TideEvent {
+  time: string
+  heightFt: number
+  type: 'H' | 'L'
+}
+
+export interface MarineDay {
+  date: string
+  windMph: number
+  windGustMph: number
+  waveFt: number | null
+  tides: TideEvent[]
+  floatplaneNote: string
+  fishingNote: string
 }

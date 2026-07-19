@@ -7,7 +7,7 @@ import {
 import { maybeNotifyForDay } from '../lib/notifications'
 import { buildDayForecast, emptyDay } from '../lib/prediction'
 import { loadShipVisits } from '../lib/ships'
-import { todayInAlaska } from '../lib/utils'
+import { addDays, todayInAlaska } from '../lib/utils'
 import { fetchWeatherForecast, seasonalWeather } from '../lib/weather'
 import type { DayForecast, DayWeather, ShipVisit } from '../types'
 
@@ -98,9 +98,11 @@ export function useGatewayData() {
   // Log + notify for today when data settles
   useEffect(() => {
     if (loading) return
-    const today = getDay(todayInAlaska())
+    const todayIso = todayInAlaska()
+    const today = getDay(todayIso)
+    const tomorrow = getDay(addDays(todayIso, 1))
     syncForecastToLog(today)
-    maybeNotifyForDay(today)
+    maybeNotifyForDay(today, tomorrow)
     setAccuracy(accuracyStats())
   }, [loading, getDay, days])
 

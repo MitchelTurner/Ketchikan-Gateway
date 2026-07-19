@@ -1,4 +1,5 @@
 import type { DayForecast, NotifyPrefs } from '../types'
+import { currentAlaskaHour } from './utils'
 
 const PREFS_KEY = 'ktn-gateway-notify-prefs'
 
@@ -6,7 +7,9 @@ export const DEFAULT_NOTIFY_PREFS: NotifyPrefs = {
   enabled: false,
   extremeDays: true,
   rainRelief: true,
+  morningDigest: true,
   lastNotifiedDate: null,
+  lastDigestDate: null,
 }
 
 export function getNotifyPrefs(): NotifyPrefs {
@@ -32,10 +35,40 @@ export async function requestNotifyPermission(): Promise<NotificationPermission>
   return Notification.requestPermission()
 }
 
-export function maybeNotifyForDay(day: DayForecast): void {
+function notify(body: string, tag: string) {
+  new Notification('Ketchikan Gateway', {
+    body,
+    icon: '/favicon.svg',
+    tag,
+  })
+}
+
+export function maybeNotifyForDay(day: DayForecast, tomorrow?: DayForecast): void {
   if (!('Notification' in window) || Notification.permission !== 'granted') return
   const prefs = getNotifyPrefs()
   if (!prefs.enabled) return
+
+  const hour = currentAlaskaHour()
+
+  // Morning digest 6–9 AM AK
+  if (
+    prefs.morningDigest &&
+    hour >= 6 &&
+    hour <= 9 &&
+    prefs.lastDigestDate !== day.date
+  ) {
+    const tom =
+      tomorrow && tomorrow.ships.length
+        ? ` Tomorrow: ${tomorrow.verdictLabel.toLowerCase()}, ${tomorrow.predictedDowntown.toLocaleString()} ashore.`
+        : ''
+    notify(
+      `Today: ${day.verdictLabel} — ${day.predictedDowntown.toLocaleString()} predicted ashore.${tom}`,
+      `ktn-digest-${day.date}`,
+    )
+    setNotifyPrefs({ lastDigestDate: day.date, lastNotifiedDate: day.date })
+    return
+  }
+
   if (prefs.lastNotifiedDate === day.date) return
 
   const messages: string[] = []
@@ -56,10 +89,6 @@ export function maybeNotifyForDay(day: DayForecast): void {
 
   if (messages.length === 0) return
 
-  new Notification('Ketchikan Gateway', {
-    body: messages.join(' '),
-    icon: '/favicon.svg',
-    tag: `ktn-${day.date}`,
-  })
+  notify(messages.join(' '), `ktn-${day.date}`)
   setNotifyPrefs({ lastNotifiedDate: day.date })
 }

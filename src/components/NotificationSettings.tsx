@@ -22,17 +22,18 @@ export function NotificationSettings() {
       return
     }
     update({ enabled: true })
-    setStatus('Browser alerts on. We’ll nudge you on extreme or rain-relief days.')
+    setStatus('Browser alerts on — including an optional morning digest.')
   }
 
   return (
     <div className="rounded-2xl border border-fog-200 bg-white/80 p-5">
       <h3 className="font-display text-xl font-semibold text-spruce-900">
-        Local alerts
+        Local alerts & morning digest
       </h3>
       <p className="mt-1 text-sm text-fog-500">
-        Browser notifications for extreme crowd days and rain-thinned busy days. SMS would
-        need a separate messaging backend — alerts here stay on-device.
+        On-device browser notifications. A full SMS/email digest needs a messaging provider
+        (Twilio/Mail) — until then, enable the morning digest here (fires 6–9 AM AK when the
+        app is open or installed as a PWA with notification permission).
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -59,6 +60,15 @@ export function NotificationSettings() {
       </div>
 
       <div className="mt-4 space-y-2 text-sm">
+        <label className="flex items-center gap-2 text-fog-700">
+          <input
+            type="checkbox"
+            checked={prefs.morningDigest}
+            onChange={(e) => update({ morningDigest: e.target.checked })}
+            className="accent-spruce-700"
+          />
+          Morning digest (today + tomorrow at a glance)
+        </label>
         <label className="flex items-center gap-2 text-fog-700">
           <input
             type="checkbox"

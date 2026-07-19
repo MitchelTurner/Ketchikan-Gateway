@@ -4,26 +4,29 @@ Daily cruise passenger forecasts for [ketchikangateway.org](https://ketchikangat
 
 ## Features
 
-- **Today** — downtown verdict (Quiet / Okay / Avoid 10–2), weather-adjusted passengers ashore, rain-relief callouts, hourly crowd curve, scheduled vs expected split, “why this number”
-- **Calendar** — season schedule with crowd coloring and day detail
-- **Activities** — picks filtered for the current crowd level
-- **Weather × Crowds** — 7-day outlook and prediction model explanation
-- **Alerts** — browser notifications on Weather × Crowds (extreme / rain-relief days)
-- **Manage** — admin-only (PocketBase login at `/manage`, hidden from public nav): CSV import, actuals, port sources
-- **PWA** — installable, offline-friendly schedule cache, auto-refresh every 10 minutes
+- **Right now** — ships alongside this hour + whether to go downtown
+- **Today / Tomorrow** — weather-adjusted passengers, verdict, rain relief, confidence
+- **Shareable day cards** — `/day/YYYY-MM-DD` with glanceable summary + share button
+- **Hourly crowd curve** — peak window + clearest stretch
+- **Tide, wind & air** — NOAA tides + Open-Meteo for floatplane / fishing context
+- **Activities** — favorites with go-now / wait tips + quiet-hours map
+- **Alerts** — morning digest + extreme / rain-relief browser notifications
+- **Manage** (admin-only at `/manage`) — CSV / season import, actuals, cancellations
 
 ## Prediction model
 
-1. Sum ship capacity (preferring confirmed actuals)
-2. Weight by ship size (mega vs expedition) and berth
+1. Sum ship capacity (preferring confirmed actuals; skip cancellations)
+2. Weight by ship size, berth, and line profile (shopping / excursion / expedition)
 3. Apply weather ashore factor (daily + hourly Open-Meteo)
 4. Build an hourly ashore curve from arrival/departure ramps
 5. Calibrate from logged predicted-vs-actual days
+6. Score confidence (clear + simple slate → high; mixed rain / heavy day → low)
 
 ## Data
 
 - Ship visits: PocketBase (`ship_visits`), with bundled `public/ship_visits.json` fallback
-- Weather: [Open-Meteo](https://open-meteo.com/) for Ketchikan (55.34°N, 131.65°W)
+- Weather: [Open-Meteo](https://open-meteo.com/)
+- Tides: [NOAA CO-OPS](https://tidesandcurrents.noaa.gov/) station 9450460 (Ketchikan)
 
 Optional env:
 

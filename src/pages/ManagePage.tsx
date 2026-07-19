@@ -4,8 +4,10 @@ import {
   clearActualOverride,
   setActualOverride,
 } from '../lib/actualOverrides'
+import { setVisitCancelled } from '../lib/cancellations'
 import { parseShipVisitsCsv } from '../lib/csv'
 import { PORT_SOURCES } from '../lib/portSources'
+import { setLastVerified } from '../lib/verified'
 import {
   importVisitsToPocketBase,
   isAdminAuthed,
@@ -77,8 +79,10 @@ export function ManagePage() {
     setActualOverride(visitId, n)
     try {
       await updateVisitActual(visitId, n)
+      setLastVerified(today)
       setMsg(`Saved actual ${n.toLocaleString()} to PocketBase.`)
     } catch {
+      setLastVerified(today)
       setMsg(`Saved locally (${n.toLocaleString()}); PocketBase update failed.`)
     }
     await refetch()
@@ -93,8 +97,29 @@ export function ManagePage() {
       return
     }
     setActualForDate(today, n)
+    setLastVerified(today)
     setMsg(`Logged ${n.toLocaleString()} actual passengers for ${today}.`)
     bumpLog()
+  }
+
+  const toggleCancel = (visitId: string, currently: boolean) => {
+    setVisitCancelled(visitId, !currently)
+    void refetch()
+    setMsg(!currently ? 'Marked cancelled for local forecasts.' : 'Restored visit.')
+  }
+
+  const downloadCsvTemplate = () => {
+    const header =
+      'date,ship,arrival,departure,berth,direction,estimated_passengers,actual_passengers,notes\n'
+    const sample =
+      '2026-07-20,EXAMPLE SHIP,07:00,16:00,2,N,2800,0,\n'
+    const blob = new Blob([header + sample], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'ketchikan-ship-visits-template.csv'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   if (!authed) {
@@ -182,6 +207,41 @@ export function ManagePage() {
             </p>
           </div>
         ))}
+      </section>
+
+      <section className="rounded-2xl border border-fog-200 bg-white/80 p-5">
+        <h2 className="font-display text-xl font-semibold text-spruce-900">
+          Season import
+        </h2>
+        <p className="mt-1 text-sm text-fog-500">
+          Pull the latest official capacity / berthing calendar from the Port of Ketchikan,
+          convert rows to CSV, then import below. One-tap opens the source PDFs.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a
+            href="https://www.ketchikan.gov/media/Tourism/cruise-schedule-daily-capacities-20260428.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full bg-channel-600 px-4 py-2 text-sm font-semibold text-white no-underline"
+          >
+            Open capacity calendar PDF
+          </a>
+          <a
+            href="https://www.ketchikan.gov/port"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-fog-300 bg-white px-4 py-2 text-sm font-semibold text-fog-700 no-underline"
+          >
+            Port berthing page
+          </a>
+          <button
+            type="button"
+            onClick={downloadCsvTemplate}
+            className="rounded-full border border-fog-300 bg-white px-4 py-2 text-sm font-semibold text-fog-700"
+          >
+            Download CSV template
+          </button>
+        </div>
       </section>
 
       <section className="rounded-2xl border border-fog-200 bg-white/80 p-5">
@@ -276,6 +336,13 @@ export function ManagePage() {
                   className="rounded-full border border-fog-300 px-3 py-1.5 text-xs font-semibold text-fog-600"
                 >
                   Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleCancel(ship.id, Boolean(ship.cancelled))}
+                  className="rounded-full border border-alert-100 bg-alert-100/50 px-3 py-1.5 text-xs font-semibold text-alert-600"
+                >
+                  {ship.cancelled ? 'Undo cancel' : 'Cancel call'}
                 </button>
               </div>
             </li>

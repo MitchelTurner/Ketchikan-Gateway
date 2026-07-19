@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ActivitiesPage } from './pages/ActivitiesPage'
 import { CalendarPage } from './pages/CalendarPage'
+import { DayPage } from './pages/DayPage'
 import { InsightsPage } from './pages/InsightsPage'
 import { ManagePage } from './pages/ManagePage'
 import { TodayPage } from './pages/TodayPage'
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<TodayPage />} />
+          <Route path="day/:date" element={<DayPage />} />
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="activities" element={<ActivitiesPage />} />
           <Route path="insights" element={<InsightsPage />} />

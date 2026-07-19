@@ -1,5 +1,6 @@
 import type { HourlyCrowdPoint } from '../types'
 import { bestClearWindow } from '../lib/prediction'
+import { currentAlaskaHour } from '../lib/utils'
 
 export function HourlyCrowdChart({
   points,
@@ -11,6 +12,7 @@ export function HourlyCrowdChart({
   if (points.length === 0) return null
   const max = Math.max(...points.map((p) => p.passengers), 1)
   const clear = bestClearWindow(points)
+  const nowHour = currentAlaskaHour()
 
   return (
     <div className="rounded-2xl border border-fog-200 bg-white/80 p-5">
@@ -37,19 +39,22 @@ export function HourlyCrowdChart({
         {points.map((p) => {
           const height = Math.max(4, Math.round((p.passengers / max) * 100))
           const isPeak = p.hour === peakHour
+          const isNow = p.hour === nowHour
           const wet = p.precipMm >= 0.3
           return (
             <div key={p.hour} className="flex flex-1 flex-col items-center gap-1">
               <div className="relative flex h-32 w-full items-end justify-center">
                 <div
-                  title={`${p.label}: ${p.passengers.toLocaleString()} · ${p.shipsInPort} ships${wet ? ` · ${p.precipMm.toFixed(1)}mm` : ''}`}
+                  title={`${p.label}: ${p.passengers.toLocaleString()} · ${p.shipsInPort} ships${wet ? ` · ${p.precipMm.toFixed(1)}mm` : ''}${isNow ? ' · now' : ''}`}
                   className={[
                     'w-full max-w-[1.75rem] rounded-t-md transition-all duration-500',
-                    isPeak
-                      ? 'bg-spruce-700'
-                      : wet
-                        ? 'bg-channel-400/80'
-                        : 'bg-channel-600/70',
+                    isNow
+                      ? 'bg-dawn-500 ring-2 ring-spruce-800'
+                      : isPeak
+                        ? 'bg-spruce-700'
+                        : wet
+                          ? 'bg-channel-400/80'
+                          : 'bg-channel-600/70',
                   ].join(' ')}
                   style={{ height: `${height}%` }}
                 />
@@ -57,7 +62,7 @@ export function HourlyCrowdChart({
               <span
                 className={[
                   'text-[0.6rem] font-medium',
-                  isPeak ? 'text-spruce-800' : 'text-fog-400',
+                  isNow || isPeak ? 'text-spruce-800' : 'text-fog-400',
                 ].join(' ')}
               >
                 {p.label.replace('AM', 'a').replace('PM', 'p')}

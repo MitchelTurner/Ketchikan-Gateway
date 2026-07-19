@@ -5,6 +5,17 @@ export function todayInAlaska(): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Anchorage' })
 }
 
+/** Current hour in Alaska (0–23). */
+export function currentAlaskaHour(): number {
+  return Number(
+    new Date().toLocaleString('en-US', {
+      timeZone: 'America/Anchorage',
+      hour: 'numeric',
+      hour12: false,
+    }),
+  )
+}
+
 export function formatLongDate(iso: string): string {
   const d = new Date(`${iso}T12:00:00`)
   return d.toLocaleDateString('en-US', {

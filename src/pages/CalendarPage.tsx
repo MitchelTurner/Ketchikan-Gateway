@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CrowdMeter } from '../components/CrowdMeter'
+import { ShareDayButton } from '../components/ShareDayButton'
 import { ShipList } from '../components/ShipList'
 import { WeatherPanel } from '../components/WeatherPanel'
 import { useGateway } from '../hooks/GatewayContext'
@@ -165,6 +167,15 @@ export function CalendarPage() {
             day.
           </p>
         )}
+        <div className="flex flex-wrap items-center gap-3">
+          <ShareDayButton day={selectedDay} />
+          <Link
+            to={`/day/${selected}`}
+            className="text-sm font-semibold text-channel-700 underline-offset-2 hover:underline"
+          >
+            Open full day card →
+          </Link>
+        </div>
         <ShipList ships={selectedDay.ships} />
       </section>
     </div>
