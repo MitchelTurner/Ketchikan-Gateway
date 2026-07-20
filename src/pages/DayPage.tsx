@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { BrandMark } from '../components/BrandMark'
 import { CapacitySplit } from '../components/CapacitySplit'
 import { ConfidenceBadge } from '../components/ConfidenceBadge'
 import { CrowdMeter } from '../components/CrowdMeter'
@@ -81,10 +80,7 @@ export function DayPage() {
 
       {/* Glanceable share card */}
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-spruce-900 via-channel-700 to-spruce-800 p-6 text-fog-50 shadow-lg">
-        <div className="flex items-center gap-3">
-          <BrandMark className="h-11 w-11 shrink-0 ring-1 ring-white/15" />
-          <p className="font-display text-2xl font-semibold text-dawn-400">KTN Port</p>
-        </div>
+        <p className="font-display text-2xl font-semibold text-dawn-400">KTN Port</p>
         <p className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">
           {day.verdictLabel}
         </p>

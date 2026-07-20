@@ -23,8 +23,8 @@ export function Layout() {
       <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-            <NavLink to="/" className="group flex items-center gap-3 no-underline">
-              <BrandMark className="h-10 w-10 shrink-0 shadow-sm ring-1 ring-spruce-900/10" />
+            <NavLink to="/" className="group flex items-center gap-2.5 no-underline">
+              <BrandMark className="h-9 w-9 shrink-0" />
               <BrandWordmark />
             </NavLink>
 
