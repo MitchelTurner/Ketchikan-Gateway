@@ -1,0 +1,10 @@
+# KTN Port — ktnport.com
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /manage
+Disallow: /manage/
+Disallow: /404
+
+Sitemap: https://ktnport.com/sitemap.xml

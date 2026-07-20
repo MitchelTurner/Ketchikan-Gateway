@@ -15,10 +15,13 @@ import {
   logoutAdmin,
   updateVisitActual,
 } from '../lib/ships'
+import { Seo } from '../components/Seo'
 import { useGateway } from '../hooks/GatewayContext'
+import { buildMeta } from '../lib/seo/meta'
 import { formatShortDate, todayInAlaska } from '../lib/utils'
 
 export function ManagePage() {
+  const manageMeta = buildMeta({ type: 'manage' })
   const { getDay, refetch, source, accuracy, calibrationBias } = useGateway()
   const today = todayInAlaska()
   const day = getDay(today)
@@ -125,6 +128,7 @@ export function ManagePage() {
   if (!authed) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center px-4 py-16">
+        <Seo meta={manageMeta} />
         <h1 className="font-display text-3xl font-semibold text-spruce-900">Admin sign in</h1>
         <p className="mt-2 text-sm text-fog-500">
           Operator tools are restricted. Sign in with your PocketBase account to continue.
@@ -166,6 +170,7 @@ export function ManagePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-10">
+      <Seo meta={manageMeta} />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-semibold text-spruce-900">Manage</h1>

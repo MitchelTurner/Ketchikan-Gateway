@@ -12,6 +12,7 @@ import { MarinePanel } from '../components/MarinePanel'
 import { QuietHoursMap } from '../components/QuietHoursMap'
 import { RainReliefBanner } from '../components/RainReliefBanner'
 import { RightNowPanel } from '../components/RightNow'
+import { Seo } from '../components/Seo'
 import { ShareDayButton } from '../components/ShareDayButton'
 import { ShipList } from '../components/ShipList'
 import { StickyGoDowntown } from '../components/StickyGoDowntown'
@@ -21,6 +22,12 @@ import { WeatherPanel } from '../components/WeatherPanel'
 import { WhyThisNumber } from '../components/WhyThisNumber'
 import { useGateway } from '../hooks/GatewayContext'
 import { shouldGoDowntown } from '../lib/downtownNow'
+import {
+  organizationJsonLd,
+  websiteJsonLd,
+} from '../lib/seo/jsonld'
+import { buildMeta } from '../lib/seo/meta'
+import { monthSlug } from '../lib/seo/slugs'
 import { addDays, formatLongDate, todayInAlaska } from '../lib/utils'
 
 export function TodayPage() {
@@ -39,9 +46,13 @@ export function TodayPage() {
   const weather = day.weather!
   const activeShips = day.ships.filter((s) => !s.cancelled)
   const answer = shouldGoDowntown(day)
+  const meta = buildMeta({ type: 'home' })
+  const y = Number(today.slice(0, 4))
+  const m = monthSlug(Number(today.slice(5, 7)) - 1)
 
   return (
     <div>
+      <Seo meta={meta} jsonLd={[organizationJsonLd(), websiteJsonLd(true)]} />
       <StickyGoDowntown day={day} />
 
       <section className="relative overflow-hidden border-b border-spruce-900/10">
@@ -60,13 +71,14 @@ export function TodayPage() {
 
         <div className="relative mx-auto max-w-5xl px-4 pb-14 pt-10 sm:pb-16 sm:pt-14">
           <p className="animate-rise font-display text-4xl font-semibold tracking-tight text-dawn-400 sm:text-5xl md:text-6xl">
-            Ketchikan Port Traffic
+            KTN Port
           </p>
           <h1 className="animate-rise-delay-1 mt-4 max-w-2xl font-display text-2xl font-medium leading-snug text-fog-50 sm:text-3xl">
-            {loading ? 'Loading today’s answer…' : answer.short}
+            {meta.h1}
           </h1>
           <p className="animate-rise-delay-2 mt-3 max-w-xl text-base text-channel-200 sm:text-lg">
-            {formatLongDate(today)}. {loading ? '' : answer.detail}
+            {formatLongDate(today)}. {loading ? 'Loading forecast…' : answer.short}{' '}
+            {loading ? '' : answer.detail}
           </p>
           <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
             <a
@@ -76,12 +88,41 @@ export function TodayPage() {
               Right now
             </a>
             <Link
-              to="/day/tomorrow"
+              to={`/schedule/${today}`}
+              className="rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-fog-50 no-underline backdrop-blur transition hover:bg-white/20"
+            >
+              Full day page
+            </Link>
+            <Link
+              to="/schedule/tomorrow"
               className="rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-fog-50 no-underline backdrop-blur transition hover:bg-white/20"
             >
               Tomorrow
             </Link>
           </div>
+          <p className="animate-rise-delay-2 mt-4 text-sm text-channel-200/90">
+            <Link to={`/schedule/${y}/${m}`} className="text-dawn-400 no-underline hover:underline">
+              This month
+            </Link>
+            {' · '}
+            <Link to="/stats" className="text-dawn-400 no-underline hover:underline">
+              Stats
+            </Link>
+            {' · '}
+            <Link
+              to="/guides/best-time-to-visit-ketchikan"
+              className="text-dawn-400 no-underline hover:underline"
+            >
+              Avoid crowds guide
+            </Link>
+            {' · '}
+            <Link
+              to="/guides/ketchikan-shore-excursions-timing"
+              className="text-dawn-400 no-underline hover:underline"
+            >
+              Excursion timing
+            </Link>
+          </p>
         </div>
       </section>
 

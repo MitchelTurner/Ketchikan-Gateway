@@ -20,7 +20,7 @@ export function TomorrowCompare({
       </p>
       <p className="mt-1 text-sm leading-relaxed text-spruce-900">{text}</p>
       <Link
-        to={`/day/${tomDate}`}
+        to={`/schedule/${tomDate}`}
         className="mt-3 inline-block text-sm font-semibold text-channel-700 underline-offset-2 hover:underline"
       >
         Open tomorrow’s day card →

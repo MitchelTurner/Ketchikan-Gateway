@@ -36,7 +36,7 @@ export function CancelledShipsBanner({ ships, date }: Props) {
       </ul>
       <p className="mt-3 text-sm text-fog-700">
         Struck from today&apos;s forecast. Confirm on the Port PDF or{' '}
-        <Link to={`/day/${date}`} className="font-semibold text-channel-700 underline underline-offset-2">
+        <Link to={`/schedule/${date}`} className="font-semibold text-channel-700 underline underline-offset-2">
           day detail
         </Link>
         .

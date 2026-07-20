@@ -32,7 +32,7 @@ export default defineConfig({
             name: 'Tomorrow',
             short_name: 'Tomorrow',
             description: 'Tomorrow’s cruise crowd forecast',
-            url: '/day/tomorrow',
+            url: '/schedule/tomorrow',
             icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
           },
         ],

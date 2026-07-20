@@ -170,7 +170,7 @@ export function CalendarPage() {
         <div className="flex flex-wrap items-center gap-3">
           <ShareDayButton day={selectedDay} />
           <Link
-            to={`/day/${selected}`}
+            to={`/schedule/${selected}`}
             className="text-sm font-semibold text-channel-700 underline-offset-2 hover:underline"
           >
             Open full day card →

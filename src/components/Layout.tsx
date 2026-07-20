@@ -5,9 +5,9 @@ import { GatewayContext } from '../hooks/GatewayContext'
 
 const publicLinks = [
   { to: '/', label: 'Today', end: true },
-  { to: '/calendar', label: 'Calendar' },
-  { to: '/activities', label: 'Activities' },
-  { to: '/insights', label: 'Weather × Crowds' },
+  { to: '/schedule', label: 'Schedule', end: false },
+  { to: '/ships', label: 'Ships', end: false },
+  { to: '/guides', label: 'Guides', end: false },
 ]
 
 export function Layout() {
@@ -61,19 +61,47 @@ export function Layout() {
         </main>
 
         <footer className="mt-auto border-t border-spruce-900/10 bg-spruce-950 text-fog-200">
-          <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-8 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-display text-lg tracking-[0.06em] text-fog-50">KTN PORT</p>
-              <p className="mt-1 max-w-md text-sm text-fog-300">
-                Daily cruise passenger predictions for Ketchikan, cross-referenced with live
-                weather. ktnport.com
-              </p>
+          <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10">
+            <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
+              <div>
+                <p className="font-display text-lg tracking-[0.06em] text-fog-50">
+                  KTN PORT
+                </p>
+                <p className="mt-1 max-w-md text-sm text-fog-300">
+                  Unofficial cruise passenger forecasts for downtown Ketchikan. Schedules
+                  change — confirm with the Port when it matters.
+                </p>
+              </div>
+              <nav
+                className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm"
+                aria-label="Footer"
+              >
+                {[
+                  { to: '/schedule', label: 'Schedule' },
+                  { to: '/ships', label: 'Ships' },
+                  { to: '/stats', label: 'Stats' },
+                  { to: '/berths', label: 'Berths' },
+                  { to: '/guides', label: 'Guides' },
+                  { to: '/insights', label: 'Weather × Crowds' },
+                  { to: '/about', label: 'About' },
+                  { to: '/data-sources', label: 'Data sources' },
+                ].map((l) => (
+                  <NavLink
+                    key={l.to}
+                    to={l.to}
+                    className="text-fog-300 no-underline hover:text-fog-50"
+                  >
+                    {l.label}
+                  </NavLink>
+                ))}
+              </nav>
             </div>
             <p className="text-xs text-fog-400">
-              Data: {data.source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
+              Mitchel Turner Dev, LLC · ktnport.com · Data:{' '}
+              {data.source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
               {data.weatherLive ? ' · weather: Open-Meteo' : ' · weather: seasonal model'}
               {data.lastUpdated
-                ? ` · refreshed ${data.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Anchorage' })}`
+                ? ` · refreshed ${data.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Anchorage' })} Alaska`
                 : ''}
             </p>
           </div>

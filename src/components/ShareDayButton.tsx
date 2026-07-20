@@ -7,8 +7,8 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
   const [status, setStatus] = useState<string | null>(null)
   const url =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/day/${day.date}`
-      : `/day/${day.date}`
+      ? `${window.location.origin}/schedule/${day.date}`
+      : `/schedule/${day.date}`
 
   const summary = `${formatShortDate(day.date)} in Ketchikan: ${day.verdictLabel} — ${day.predictedDowntown.toLocaleString()} passengers predicted ashore. ${day.why}`
 
@@ -58,7 +58,7 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
         Copy for Facebook
       </button>
       <a
-        href={`/day/${day.date}`}
+        href={`/schedule/${day.date}`}
         className="rounded-full border border-fog-300 bg-white/80 px-4 py-2 text-sm font-semibold text-fog-700 no-underline"
       >
         Day card

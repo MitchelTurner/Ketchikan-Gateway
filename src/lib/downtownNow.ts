@@ -162,5 +162,5 @@ export function facebookShareText(day: DayForecast): string {
     : timeline.firstArrival
       ? ` First arrival ${timeline.firstArrival}.`
       : ''
-  return `${day.date}: ${day.verdictLabel} — ~${day.predictedDowntown.toLocaleString()} predicted ashore${cancelled}.${windowHint}${rain} ktnport.com/day/${day.date}`
+  return `${day.date}: ${day.verdictLabel} — ~${day.predictedDowntown.toLocaleString()} predicted ashore${cancelled}.${windowHint}${rain} ktnport.com/schedule/${day.date}`
 }
