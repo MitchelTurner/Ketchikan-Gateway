@@ -37,7 +37,7 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
               <div className="flex flex-wrap items-center gap-2">
                 <p
                   className={[
-                    'truncate font-display text-lg font-semibold text-spruce-900',
+                    'break-words font-display text-base font-semibold text-spruce-900 sm:truncate sm:text-lg',
                     ship.cancelled ? 'line-through decoration-2' : '',
                   ].join(' ')}
                 >

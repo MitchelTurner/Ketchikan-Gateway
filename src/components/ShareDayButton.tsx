@@ -1,9 +1,16 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { facebookShareText } from '../lib/downtownNow'
 import { formatShortDate } from '../lib/utils'
 import type { DayForecast } from '../types'
 
-export function ShareDayButton({ day }: { day: DayForecast }) {
+export function ShareDayButton({
+  day,
+  compact = false,
+}: {
+  day: DayForecast
+  compact?: boolean
+}) {
   const [status, setStatus] = useState<string | null>(null)
   const url =
     typeof window !== 'undefined'
@@ -16,17 +23,17 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
     try {
       if (navigator.share) {
         await navigator.share({ title: 'KTN Port', text: summary, url })
-        setStatus('Shared.')
+        setStatus('Shared')
         return
       }
       await navigator.clipboard.writeText(`${summary}\n${url}`)
-      setStatus('Link copied.')
+      setStatus('Copied')
     } catch {
       try {
         await navigator.clipboard.writeText(url)
-        setStatus('Link copied.')
+        setStatus('Copied')
       } catch {
-        setStatus('Could not share from this browser.')
+        setStatus('Share failed')
       }
     }
   }
@@ -35,34 +42,37 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
     const text = `${facebookShareText(day)}\n${url}`
     try {
       await navigator.clipboard.writeText(text)
-      setStatus('Facebook text copied.')
+      setStatus('FB text copied')
     } catch {
       window.prompt('Copy this for Facebook:', text)
     }
   }
 
+  const btn =
+    'inline-flex min-h-10 items-center justify-center rounded-full px-3.5 py-2 text-sm font-semibold sm:min-h-0 sm:px-4'
+
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={`flex flex-wrap items-center gap-2 ${compact ? 'w-full sm:w-auto' : ''}`}>
       <button
         type="button"
         onClick={() => void share()}
-        className="rounded-full bg-spruce-900 px-4 py-2 text-sm font-semibold text-fog-50"
+        className={`${btn} bg-spruce-900 text-fog-50`}
       >
-        Share this day
+        Share
       </button>
       <button
         type="button"
         onClick={() => void copyFacebook()}
-        className="rounded-full border border-[#1877F2]/40 bg-[#1877F2]/10 px-4 py-2 text-sm font-semibold text-[#166FE5]"
+        className={`${btn} border border-[#1877F2]/40 bg-[#1877F2]/10 text-[#166FE5] ${compact ? 'hidden sm:inline-flex' : ''}`}
       >
-        Copy for Facebook
+        Facebook
       </button>
-      <a
-        href={`/schedule/${day.date}`}
-        className="rounded-full border border-fog-300 bg-white/80 px-4 py-2 text-sm font-semibold text-fog-700 no-underline"
+      <Link
+        to={`/schedule/${day.date}`}
+        className={`${btn} border border-fog-300 bg-white/80 text-fog-700 no-underline ${compact ? 'hidden sm:inline-flex' : ''}`}
       >
         Day card
-      </a>
+      </Link>
       {status && <span className="text-xs text-channel-700">{status}</span>}
     </div>
   )

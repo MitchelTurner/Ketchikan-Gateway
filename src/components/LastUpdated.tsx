@@ -21,15 +21,18 @@ export function LastUpdated({
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-xs text-fog-500">
-      <span>
-        Updated {time} AK · {source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
-        {weatherLive ? ' · Open-Meteo' : ' · seasonal weather'}
+      <span className="min-w-0 leading-snug">
+        <span className="sm:hidden">Updated {time} AK</span>
+        <span className="hidden sm:inline">
+          Updated {time} AK · {source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
+          {weatherLive ? ' · Open-Meteo' : ' · seasonal weather'}
+        </span>
       </span>
       <button
         type="button"
         onClick={onRefresh}
         disabled={loading}
-        className="rounded-full border border-fog-300 bg-white/70 px-2.5 py-0.5 font-medium text-fog-700 hover:bg-white disabled:opacity-50"
+        className="min-h-9 rounded-full border border-fog-300 bg-white/70 px-3 py-1 font-medium text-fog-700 hover:bg-white disabled:opacity-50 sm:min-h-0 sm:px-2.5 sm:py-0.5"
       >
         Refresh
       </button>

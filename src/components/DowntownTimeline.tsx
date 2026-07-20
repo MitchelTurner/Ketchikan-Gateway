@@ -12,13 +12,13 @@ export function DowntownTimeline({ day }: { day: DayForecast }) {
   ]
 
   return (
-    <div className="rounded-2xl border border-fog-200 bg-white/80 px-4 py-4">
+    <div className="rounded-2xl border border-fog-200 bg-white/80 px-3 py-3.5 sm:px-4 sm:py-4">
       <p className="text-xs font-semibold tracking-wider text-fog-500 uppercase">
         Downtown timeline
       </p>
-      <ol className="mt-3 grid grid-cols-3 gap-2">
+      <ol className="mt-3 grid grid-cols-3 gap-1 sm:gap-2">
         {steps.map((s, i) => (
-          <li key={s.label} className="relative text-center">
+          <li key={s.label} className="relative min-w-0 text-center">
             {i < steps.length - 1 && (
               <span
                 className="absolute top-3 left-[58%] hidden h-px w-[84%] bg-fog-200 sm:block"
@@ -28,13 +28,13 @@ export function DowntownTimeline({ day }: { day: DayForecast }) {
             <p className="relative z-[1] mx-auto mb-1 grid h-6 w-6 place-items-center rounded-full bg-spruce-900 text-[0.65rem] font-bold text-fog-50">
               {i + 1}
             </p>
-            <p className="text-[0.65rem] font-semibold tracking-wide text-fog-400 uppercase">
+            <p className="text-[0.6rem] font-semibold tracking-wide text-fog-400 uppercase sm:text-[0.65rem]">
               {s.label}
             </p>
-            <p className="font-display text-lg font-semibold tabular-nums text-spruce-900">
+            <p className="font-display text-base font-semibold tabular-nums text-spruce-900 sm:text-lg">
               {s.value}
             </p>
-            <p className="text-[0.65rem] text-fog-500">{s.hint}</p>
+            <p className="hidden text-[0.65rem] text-fog-500 sm:block">{s.hint}</p>
           </li>
         ))}
       </ol>

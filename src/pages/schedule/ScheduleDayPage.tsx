@@ -90,7 +90,7 @@ export function ScheduleDayPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <div className="mx-auto max-w-5xl space-y-6 overflow-x-clip px-3 py-6 sm:space-y-8 sm:px-4 sm:py-10">
       <Seo
         meta={{
           ...meta,
@@ -102,17 +102,17 @@ export function ScheduleDayPage() {
       <Breadcrumbs items={crumbs} />
 
       <header className="space-y-3">
-        <h1 className="font-display text-3xl font-semibold text-spruce-900 sm:text-4xl">
+        <h1 className="font-display text-2xl font-semibold leading-tight text-spruce-900 sm:text-4xl">
           {meta.h1}
         </h1>
-        <p className="max-w-3xl text-lg text-fog-700">
+        <p className="max-w-3xl text-base text-fog-700 sm:text-lg">
           <strong className="font-semibold text-spruce-900">{one.lead}</strong>
           {one.rest}
         </p>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <AlaskaTimeNote />
           <LastUpdatedStamp at={lastUpdated} />
-          <ShareDayButton day={day} />
+          <ShareDayButton day={day} compact />
         </div>
       </header>
 

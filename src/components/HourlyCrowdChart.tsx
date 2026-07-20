@@ -15,14 +15,14 @@ export function HourlyCrowdChart({
   const nowHour = currentAlaskaHour()
 
   return (
-    <div className="rounded-2xl border border-fog-200 bg-white/80 p-5">
+    <div className="rounded-2xl border border-fog-200 bg-white/80 p-3 sm:p-5">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h3 className="font-display text-xl font-semibold text-spruce-900">
+        <div className="min-w-0">
+          <h3 className="font-display text-lg font-semibold text-spruce-900 sm:text-xl">
             Hourly downtown curve
           </h3>
-          <p className="text-sm text-fog-500">
-            Predicted passengers ashore by hour
+          <p className="text-xs text-fog-500 sm:text-sm">
+            Passengers ashore by hour
             {peakHour != null
               ? ` · peak ${points.find((p) => p.hour === peakHour)?.label ?? ''}`
               : ''}
@@ -30,12 +30,12 @@ export function HourlyCrowdChart({
         </div>
         {clear && (
           <p className="rounded-full bg-spruce-50 px-3 py-1 text-xs font-semibold text-spruce-800">
-            Clearest window {clear.label}
+            Clearest {clear.label}
           </p>
         )}
       </div>
 
-      <div className="mt-5 flex h-40 items-end gap-1 sm:gap-1.5">
+      <div className="mt-4 flex h-36 items-end gap-0.5 sm:mt-5 sm:h-40 sm:gap-1.5">
         {points.map((p) => {
           const height = Math.max(4, Math.round((p.passengers / max) * 100))
           const isPeak = p.hour === peakHour

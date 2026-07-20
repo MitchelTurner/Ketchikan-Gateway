@@ -19,20 +19,20 @@ export function Layout() {
 
   return (
     <GatewayContext.Provider value={data}>
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-            <NavLink to="/" className="group no-underline">
-              <span className="block font-display text-[1.15rem] font-semibold leading-none tracking-[0.06em] text-spruce-900 group-hover:text-spruce-700">
+      <div className="flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+          <div className="mx-auto flex max-w-5xl items-center gap-3 px-3 py-2.5 sm:gap-4 sm:px-4 sm:py-3">
+            <NavLink to="/" className="min-w-0 shrink-0 no-underline">
+              <span className="block font-display text-base font-semibold leading-none tracking-[0.06em] text-spruce-900 sm:text-[1.15rem]">
                 KTN PORT
               </span>
-              <span className="mt-1 block text-[0.65rem] font-medium tracking-[0.1em] text-fog-500 uppercase">
+              <span className="mt-0.5 hidden text-[0.65rem] font-medium tracking-[0.1em] text-fog-500 uppercase sm:block">
                 Ketchikan cruise crowds
               </span>
             </NavLink>
 
             <nav
-              className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
+              className="-mx-1 flex min-w-0 flex-1 items-center justify-end gap-1 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               aria-label="Primary"
             >
               {links.map((l) => (
@@ -42,7 +42,7 @@ export function Layout() {
                   end={l.end}
                   className={({ isActive }) =>
                     [
-                      'rounded-full px-3 py-1.5 text-sm font-medium no-underline transition-colors',
+                      'shrink-0 rounded-full px-2.5 py-1.5 text-xs font-medium no-underline transition-colors sm:px-3 sm:text-sm',
                       isActive
                         ? 'bg-spruce-900 text-fog-50'
                         : 'text-fog-700 hover:bg-spruce-900/8 hover:text-spruce-900',
@@ -56,24 +56,23 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="flex-1">
+        <main className="min-w-0 flex-1">
           <Outlet />
         </main>
 
-        <footer className="mt-auto border-t border-spruce-900/10 bg-spruce-950 text-fog-200">
-          <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10">
-            <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
-              <div>
+        <footer className="mt-auto border-t border-spruce-900/10 bg-spruce-950 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-fog-200">
+          <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8 sm:gap-6 sm:py-10">
+            <div className="flex flex-col gap-5 sm:flex-row sm:justify-between">
+              <div className="min-w-0">
                 <p className="font-display text-lg tracking-[0.06em] text-fog-50">
                   KTN PORT
                 </p>
-                <p className="mt-1 max-w-md text-sm text-fog-300">
-                  Unofficial cruise passenger forecasts for downtown Ketchikan. Schedules
-                  change — confirm with the Port when it matters.
+                <p className="mt-1 max-w-md text-sm leading-relaxed text-fog-300">
+                  Unofficial cruise passenger forecasts for downtown Ketchikan.
                 </p>
               </div>
               <nav
-                className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm"
+                className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:gap-x-8"
                 aria-label="Footer"
               >
                 {[
@@ -82,26 +81,24 @@ export function Layout() {
                   { to: '/stats', label: 'Stats' },
                   { to: '/berths', label: 'Berths' },
                   { to: '/guides', label: 'Guides' },
-                  { to: '/insights', label: 'Weather × Crowds' },
+                  { to: '/insights', label: 'Weather' },
                   { to: '/about', label: 'About' },
-                  { to: '/data-sources', label: 'Data sources' },
+                  { to: '/data-sources', label: 'Data' },
                 ].map((l) => (
                   <NavLink
                     key={l.to}
                     to={l.to}
-                    className="text-fog-300 no-underline hover:text-fog-50"
+                    className="py-0.5 text-fog-300 no-underline hover:text-fog-50"
                   >
                     {l.label}
                   </NavLink>
                 ))}
               </nav>
             </div>
-            <p className="text-xs text-fog-400">
-              Mitchel Turner Dev, LLC · ktnport.com · Data:{' '}
-              {data.source === 'pocketbase' ? 'live port DB' : 'bundled schedule'}
-              {data.weatherLive ? ' · weather: Open-Meteo' : ' · weather: seasonal model'}
+            <p className="text-[0.7rem] leading-relaxed text-fog-400 sm:text-xs">
+              Mitchel Turner Dev, LLC · ktnport.com
               {data.lastUpdated
-                ? ` · refreshed ${data.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Anchorage' })} Alaska`
+                ? ` · refreshed ${data.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Anchorage' })} AK`
                 : ''}
             </p>
           </div>

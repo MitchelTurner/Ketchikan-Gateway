@@ -17,13 +17,13 @@ export function ScheduleTable({
   )
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-fog-200 bg-white/80">
-      <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
-        <caption className="border-b border-fog-100 px-4 py-3 text-left text-xs font-semibold tracking-wider text-fog-500 uppercase">
+    <div className="-mx-3 overflow-x-auto overscroll-x-contain px-3 sm:mx-0 sm:px-0">
+      <div className="min-w-0 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
+      <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
+        <caption className="border-b border-fog-100 px-3 py-3 text-left text-xs font-semibold tracking-wider text-fog-500 uppercase sm:px-4">
           {caption}
           <span className="mt-1 block font-normal normal-case tracking-normal text-fog-400">
-            Times in Alaska time (America/Anchorage). Passenger counts are
-            estimates unless marked actual.
+            Alaska time · passenger counts are estimates unless marked actual.
           </span>
         </caption>
         <thead>
@@ -105,6 +105,7 @@ export function ScheduleTable({
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

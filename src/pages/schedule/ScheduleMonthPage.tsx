@@ -42,30 +42,32 @@ export function ScheduleMonthPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <div className="mx-auto max-w-5xl space-y-6 overflow-x-clip px-3 py-6 sm:space-y-8 sm:px-4 sm:py-10">
       <Seo
         meta={meta}
         jsonLd={[organizationJsonLd(), websiteJsonLd(), breadcrumbJsonLd(crumbs)]}
       />
       <Breadcrumbs items={crumbs} />
       <header>
-        <h1 className="font-display text-3xl font-semibold text-spruce-900">
+        <h1 className="font-display text-2xl font-semibold text-spruce-900 sm:text-3xl">
           {meta.h1}
         </h1>
-        <p className="mt-2 max-w-2xl text-fog-600">
-          Every day in {monthLabel(monthParam)} {year}. Open a date for the full ship
-          table, passenger estimates, and hourly downtown curve.
+        <p className="mt-2 max-w-2xl text-sm text-fog-600 sm:text-base">
+          Tap a date for ships, berths, and the downtown crowd forecast.
         </p>
       </header>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[0.65rem] font-semibold tracking-wide text-fog-400 uppercase">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-          <div key={d} className="py-1">
-            {d}
+      <div className="grid grid-cols-7 gap-0.5 text-center text-[0.6rem] font-semibold tracking-wide text-fog-400 uppercase sm:gap-1 sm:text-[0.65rem]">
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+          <div key={`${d}-${i}`} className="py-1">
+            <span className="sm:hidden">{d}</span>
+            <span className="hidden sm:inline">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}
+            </span>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
         {cells.map((iso, i) => {
           if (!iso) return <div key={`e-${i}`} />
           const day = getDay(iso)
@@ -75,14 +77,19 @@ export function ScheduleMonthPage() {
             <Link
               key={iso}
               to={`/schedule/${iso}`}
-              className="flex min-h-[4.5rem] flex-col rounded-xl border border-fog-200 bg-white/80 p-1.5 no-underline transition hover:border-channel-400 sm:min-h-[5.5rem] sm:p-2"
+              className="flex min-h-14 flex-col rounded-lg border border-fog-200 bg-white/80 p-1 no-underline transition hover:border-channel-400 sm:min-h-[5.5rem] sm:rounded-xl sm:p-2"
             >
-              <span className="text-xs font-semibold text-spruce-900">{dom}</span>
-              <span className="mt-auto text-[0.65rem] text-fog-500">
-                {n === 0 ? 'Quiet' : `${n} ship${n === 1 ? '' : 's'}`}
+              <span className="text-[0.7rem] font-semibold text-spruce-900 sm:text-xs">
+                {dom}
+              </span>
+              <span className="mt-auto text-[0.55rem] leading-tight text-fog-500 sm:text-[0.65rem]">
+                {n === 0 ? '—' : `${n}`}
+                <span className="hidden sm:inline">
+                  {n === 0 ? ' Quiet' : ` ship${n === 1 ? '' : 's'}`}
+                </span>
               </span>
               {n > 0 && (
-                <span className="mt-0.5 text-[0.65rem] tabular-nums text-channel-700">
+                <span className="mt-0.5 hidden text-[0.65rem] tabular-nums text-channel-700 sm:block">
                   {day.scheduledPassengers.toLocaleString()}
                 </span>
               )}
@@ -100,13 +107,13 @@ export function ScheduleMonthPage() {
             <li key={iso}>
               <Link
                 to={`/schedule/${iso}`}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 no-underline hover:bg-fog-50"
+                className="flex min-h-12 flex-wrap items-center justify-between gap-2 px-3 py-3 no-underline hover:bg-fog-50 sm:px-4"
               >
-                <span className="font-semibold text-spruce-900">
-                  {iso} · {n === 0 ? 'No ships' : `${n} ships`}
+                <span className="text-sm font-semibold text-spruce-900 sm:text-base">
+                  {iso.slice(8)} · {n === 0 ? 'No ships' : `${n} ships`}
                 </span>
-                <span className="text-sm tabular-nums text-fog-600">
-                  {day.scheduledPassengers.toLocaleString()} pax scheduled
+                <span className="text-xs tabular-nums text-fog-600 sm:text-sm">
+                  {day.scheduledPassengers.toLocaleString()} pax
                 </span>
               </Link>
             </li>

@@ -24,7 +24,6 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
     snap: currentShoreSnapshot(day),
   }))
 
-  // Depend on schedule identity, not object reference (avoids render loops)
   const dayStamp = [
     day.date,
     day.verdict,
@@ -79,40 +78,33 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
       window.clearInterval(id)
       if (settleTimer) window.clearTimeout(settleTimer)
     }
-    // dayStamp captures schedule/crowd changes; day used inside apply
     // eslint-disable-next-line react-hooks/exhaustive-deps -- dayStamp is the stable identity
   }, [dayStamp])
 
   const { answer, snap } = view
   const emptyNow = snap.shipsNow.length === 0
+  const chip = emptyNow
+    ? 'No ships in'
+    : `${snap.shipsNow.length} in · ~${snap.passengers.toLocaleString()}`
 
   return (
-    <div
-      className={`sticky top-[3.6rem] z-30 border-b ${TONE[answer.verdict]}`}
-    >
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+    <div className={`sticky top-[3.25rem] z-30 border-b sm:top-[3.6rem] ${TONE[answer.verdict]}`}>
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5">
         <div className="min-w-0">
-          <p className="text-[0.65rem] font-semibold tracking-[0.12em] uppercase opacity-80">
+          <p className="truncate text-[0.6rem] font-semibold tracking-[0.12em] uppercase opacity-80 sm:text-[0.65rem]">
             Should I go downtown?
           </p>
-          <p className="font-display text-lg font-semibold leading-tight sm:text-xl">
+          <p className="truncate font-display text-base font-semibold leading-tight sm:text-lg md:text-xl">
             {answer.short}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span className="rounded-full bg-black/15 px-2.5 py-1">
+        <div className="shrink-0 text-right">
+          <p className="rounded-full bg-black/15 px-2.5 py-1 text-[0.65rem] font-semibold sm:text-xs">
             {answer.label}
-          </span>
-          <span className="rounded-full bg-black/15 px-2.5 py-1 tabular-nums">
-            {emptyNow
-              ? 'Almost empty now'
-              : `~${snap.passengers.toLocaleString()} ashore now`}
-          </span>
-          <span className="rounded-full bg-black/15 px-2.5 py-1">
-            {emptyNow
-              ? 'No ships in'
-              : `${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in`}
-          </span>
+          </p>
+          <p className="mt-1 hidden text-[0.65rem] font-semibold opacity-90 sm:block">
+            {chip}
+          </p>
         </div>
       </div>
     </div>
