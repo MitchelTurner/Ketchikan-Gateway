@@ -11,17 +11,80 @@ const TONE = {
   avoid: 'bg-alert-500 text-white border-alert-600',
 } as const
 
+function liveKey(day: DayForecast): string {
+  const snap = currentShoreSnapshot(day)
+  const a = shouldGoDowntown(day)
+  return `${snap.hour}|${snap.shipsNow.length}|${a.verdict}|${a.short}`
+}
+
 export function StickyGoDowntown({ day }: { day: DayForecast }) {
-  const [tick, setTick] = useState(0)
+  const [view, setView] = useState(() => ({
+    key: liveKey(day),
+    answer: shouldGoDowntown(day),
+    snap: currentShoreSnapshot(day),
+  }))
+
+  // Depend on schedule identity, not object reference (avoids render loops)
+  const dayStamp = [
+    day.date,
+    day.verdict,
+    day.predictedDowntown,
+    day.ships.map((s) => `${s.id}:${s.cancelled ? 1 : 0}:${s.arrival}-${s.departure}`).join(','),
+    day.hourlyCrowd.map((h) => `${h.hour}:${h.passengers}`).join(','),
+  ].join('|')
 
   useEffect(() => {
-    const id = window.setInterval(() => setTick((t) => t + 1), 60_000)
-    return () => window.clearInterval(id)
-  }, [])
+    let settleTimer: number | undefined
+    let pendingKey: string | null = null
 
-  void tick
-  const answer = shouldGoDowntown(day)
-  const snap = currentShoreSnapshot(day)
+    const apply = () => {
+      const key = liveKey(day)
+      const answer = shouldGoDowntown(day)
+      const snap = currentShoreSnapshot(day)
+
+      setView((prev) => {
+        if (key === prev.key) {
+          pendingKey = null
+          if (
+            prev.snap.passengers === snap.passengers &&
+            prev.snap.shipsNow.length === snap.shipsNow.length &&
+            prev.answer.short === answer.short
+          ) {
+            return prev
+          }
+          return { key, answer, snap }
+        }
+
+        if (pendingKey !== key) {
+          pendingKey = key
+          if (settleTimer) window.clearTimeout(settleTimer)
+          settleTimer = window.setTimeout(() => {
+            const settledKey = liveKey(day)
+            if (settledKey !== key) return
+            setView({
+              key: settledKey,
+              answer: shouldGoDowntown(day),
+              snap: currentShoreSnapshot(day),
+            })
+            pendingKey = null
+          }, 1200)
+        }
+        return prev
+      })
+    }
+
+    apply()
+    const id = window.setInterval(apply, 60_000)
+    return () => {
+      window.clearInterval(id)
+      if (settleTimer) window.clearTimeout(settleTimer)
+    }
+    // dayStamp captures schedule/crowd changes; day used inside apply
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dayStamp is the stable identity
+  }, [dayStamp])
+
+  const { answer, snap } = view
+  const emptyNow = snap.shipsNow.length === 0
 
   return (
     <div
@@ -41,12 +104,12 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
             {answer.label}
           </span>
           <span className="rounded-full bg-black/15 px-2.5 py-1 tabular-nums">
-            {snap.shipsNow.length === 0 && snap.passengers < 800
+            {emptyNow
               ? 'Almost empty now'
               : `~${snap.passengers.toLocaleString()} ashore now`}
           </span>
           <span className="rounded-full bg-black/15 px-2.5 py-1">
-            {snap.shipsNow.length === 0
+            {emptyNow
               ? 'No ships in'
               : `${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in`}
           </span>

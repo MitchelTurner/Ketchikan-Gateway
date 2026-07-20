@@ -21,16 +21,28 @@ export function currentShoreSnapshot(day: DayForecast) {
 
   const shipsNow = day.ships.filter((s) => {
     if (s.cancelled) return false
-    return parseHour(s.arrival) <= hour && hour < parseHour(s.departure)
+    const arrive = parseHour(s.arrival)
+    const depart = parseHour(s.departure)
+    // Require a real call window — empty times must not match
+    if (!s.arrival || !s.departure || depart <= arrive) return false
+    return arrive <= hour && hour < depart
   })
 
-  const passengers = point?.passengers ?? 0
+  // If no ships are alongside, shore traffic is effectively empty for "right now"
+  // (hourly curve can still show ramps before/after and must not drive the banner).
+  const passengers = shipsNow.length === 0 ? 0 : (point?.passengers ?? 0)
   const level = crowdFromPassengers(passengers, shipsNow.length)
 
   return { hour, passengers, shipsNow, level, point }
 }
 
-/** Short answer for sticky bar / hero — based on right now, not the whole day. */
+function levelToVerdict(level: ReturnType<typeof crowdFromPassengers>): DowntownVerdict {
+  if (level === 'extreme') return 'avoid'
+  if (level === 'busy') return 'okay'
+  return 'quiet'
+}
+
+/** Short answer for sticky bar / hero — based on ships in port right now. */
 export function shouldGoDowntown(day: DayForecast): {
   verdict: DowntownVerdict
   label: string
@@ -42,39 +54,21 @@ export function shouldGoDowntown(day: DayForecast): {
   const laterGetsBusy =
     day.verdict === 'okay' || day.verdict === 'avoid'
 
-  if (active.length === 0) {
+  if (active.length === 0 || snap.shipsNow.length === 0) {
     return {
       verdict: 'quiet',
       label: 'Pretty empty',
       short: 'Yes — town is pretty empty',
-      detail: 'No ships in the schedule. Downtown should feel open.',
+      detail:
+        active.length === 0
+          ? 'No ships in the schedule. Downtown should feel open.'
+          : laterGetsBusy
+            ? 'No ships alongside right now — downtown should feel pretty empty. It may get busier later when calls overlap.'
+            : 'No ships alongside right now — downtown should feel pretty empty.',
     }
   }
 
-  // Empty right now (no ships alongside, little/no shore traffic) — even on a busy day later
-  const emptyNow =
-    snap.shipsNow.length === 0 &&
-    snap.passengers < 800 &&
-    (snap.level === 'low' || snap.level === 'moderate')
-
-  if (emptyNow) {
-    return {
-      verdict: 'quiet',
-      label: 'Pretty empty',
-      short: 'Yes — town is pretty empty',
-      detail: laterGetsBusy
-        ? `Almost no one ashore right now (~${snap.passengers.toLocaleString()}). It may get busier later — ${day.verdictLabel.toLowerCase()} once ships overlap.`
-        : `Almost no one ashore right now (~${snap.passengers.toLocaleString()}). Good window to head downtown.`,
-    }
-  }
-
-  // Ships alongside — use this hour’s crowd
-  const verdict: DowntownVerdict =
-    snap.level === 'extreme'
-      ? 'avoid'
-      : snap.level === 'busy'
-        ? 'okay'
-        : 'quiet'
+  const verdict = levelToVerdict(snap.level)
 
   if (verdict === 'avoid') {
     return {
@@ -98,7 +92,7 @@ export function shouldGoDowntown(day: DayForecast): {
     verdict: 'quiet',
     label: 'Quiet',
     short: 'Yes — go downtown',
-    detail: `Light traffic (~${snap.passengers.toLocaleString()} ashore). Good window.`,
+    detail: `Light traffic (~${snap.passengers.toLocaleString()} ashore) with ${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in. Good window.`,
   }
 }
 
