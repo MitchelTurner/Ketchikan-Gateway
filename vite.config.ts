@@ -20,6 +20,22 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait-primary',
         start_url: '/',
+        shortcuts: [
+          {
+            name: 'Today',
+            short_name: 'Today',
+            description: 'Should I go downtown right now?',
+            url: '/',
+            icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
+          },
+          {
+            name: 'Tomorrow',
+            short_name: 'Tomorrow',
+            description: 'Tomorrow’s cruise crowd forecast',
+            url: '/day/tomorrow',
+            icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
+          },
+        ],
         icons: [
           {
             src: '/favicon.svg',

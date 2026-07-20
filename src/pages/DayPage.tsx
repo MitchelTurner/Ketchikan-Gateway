@@ -1,26 +1,40 @@
-import { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { Link, Navigate, useParams } from 'react-router-dom'
+import { CancelledShipsBanner } from '../components/CancelledShipsBanner'
 import { CapacitySplit } from '../components/CapacitySplit'
 import { ConfidenceBadge } from '../components/ConfidenceBadge'
 import { CrowdMeter } from '../components/CrowdMeter'
+import { DowntownTimeline } from '../components/DowntownTimeline'
 import { DowntownVerdictBanner } from '../components/DowntownVerdict'
 import { HourlyCrowdChart } from '../components/HourlyCrowdChart'
+import { LastVerifiedBanner } from '../components/LastVerified'
 import { MarinePanel } from '../components/MarinePanel'
 import { RainReliefBanner } from '../components/RainReliefBanner'
 import { ShareDayButton } from '../components/ShareDayButton'
 import { ShipList } from '../components/ShipList'
+import { WeatherConflictBanner } from '../components/WeatherConflictBanner'
 import { WeatherPanel } from '../components/WeatherPanel'
 import { WhyThisNumber } from '../components/WhyThisNumber'
 import { useGateway } from '../hooks/GatewayContext'
-import { formatLongDate } from '../lib/utils'
+import { addDays, formatLongDate, todayInAlaska } from '../lib/utils'
+
+function resolveDateParam(raw: string): string | null {
+  if (raw === 'tomorrow') return addDays(todayInAlaska(), 1)
+  if (raw === 'today') return todayInAlaska()
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw
+  return null
+}
 
 export function DayPage() {
-  const { date = '' } = useParams()
+  const { date: raw = '' } = useParams()
+  const aliasTarget =
+    raw === 'tomorrow' || raw === 'today' ? resolveDateParam(raw) : null
+  const date = useMemo(() => resolveDateParam(raw) ?? '', [raw])
   const { getDay, loading } = useGateway()
-  const day = getDay(date)
+  const day = getDay(date || todayInAlaska())
 
   useEffect(() => {
-    if (!date) return
+    if (!date || aliasTarget) return
     const title = `KTN Port ${date}: ${day.verdictLabel} · ${day.predictedDowntown.toLocaleString()} ashore`
     document.title = `${title} | KTN Port`
     const desc = day.why || 'Cruise passenger forecast for Ketchikan, Alaska.'
@@ -44,9 +58,13 @@ export function DayPage() {
     setOg('og:title', title)
     setOg('og:description', desc)
     setOg('og:url', `https://ktnport.com/day/${date}`)
-  }, [date, day])
+  }, [aliasTarget, date, day])
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  if (aliasTarget) {
+    return <Navigate to={`/day/${aliasTarget}`} replace />
+  }
+
+  if (!date) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-16">
         <p className="text-fog-600">Invalid date.</p>
@@ -78,7 +96,8 @@ export function DayPage() {
         <ShareDayButton day={day} />
       </div>
 
-      {/* Glanceable share card */}
+      <LastVerifiedBanner />
+
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-spruce-900 via-channel-700 to-spruce-800 p-6 text-fog-50 shadow-lg">
         <p className="font-display text-2xl font-semibold text-dawn-400">
           Ketchikan Port Traffic
@@ -95,6 +114,10 @@ export function DayPage() {
         </p>
         <p className="mt-4 text-sm text-fog-200">{day.why}</p>
       </div>
+
+      <CancelledShipsBanner ships={day.ships} date={date} />
+      <WeatherConflictBanner day={day} />
+      <DowntownTimeline day={day} />
 
       {day.ships.some((s) => !s.cancelled) && <DowntownVerdictBanner day={day} />}
       <RainReliefBanner day={day} />

@@ -28,19 +28,27 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
             key={ship.id}
             className={[
               'flex flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4',
-              ship.cancelled ? 'opacity-50' : '',
+              ship.cancelled
+                ? 'border-l-4 border-l-alert-500 bg-alert-100/35 opacity-90'
+                : '',
             ].join(' ')}
           >
             <div className="min-w-0">
-              <p
-                className={[
-                  'truncate font-display text-lg font-semibold text-spruce-900',
-                  ship.cancelled ? 'line-through' : '',
-                ].join(' ')}
-              >
-                {ship.ship}
-                {ship.cancelled ? ' (cancelled)' : ''}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p
+                  className={[
+                    'truncate font-display text-lg font-semibold text-spruce-900',
+                    ship.cancelled ? 'line-through decoration-2' : '',
+                  ].join(' ')}
+                >
+                  {ship.ship}
+                </p>
+                {ship.cancelled ? (
+                  <span className="rounded-full bg-alert-500 px-2 py-0.5 text-[0.65rem] font-bold tracking-wide text-white uppercase">
+                    Cancelled
+                  </span>
+                ) : null}
+              </div>
               <p className="mt-0.5 text-sm text-fog-500">
                 {ship.arrival}–{ship.departure}
                 {ship.berth ? ` · Berth ${ship.berth}` : ''}
@@ -48,11 +56,18 @@ export function ShipList({ ships }: { ships: ShipVisit[] }) {
                   ? ` · ${ship.direction === 'N' ? 'Northbound' : ship.direction === 'S' ? 'Southbound' : ship.direction}`
                   : ''}
               </p>
-              <p className="mt-1 text-[0.7rem] text-fog-400">
-                {profileMeta.label}
-                {sizeW > 1 ? ' · mega-ship' : sizeW < 0.9 ? ' · expedition size' : ''}
-                {berthW < 1 ? ' · off-dock' : ''}
-              </p>
+              {!ship.cancelled && (
+                <p className="mt-1 text-[0.7rem] text-fog-400">
+                  {profileMeta.label}
+                  {sizeW > 1 ? ' · mega-ship' : sizeW < 0.9 ? ' · expedition size' : ''}
+                  {berthW < 1 ? ' · off-dock' : ''}
+                </p>
+              )}
+              {ship.cancelled ? (
+                <p className="mt-1 text-xs font-medium text-alert-600">
+                  Not counted in today&apos;s forecast — do not plan around this call.
+                </p>
+              ) : null}
               {ship.popularity_notes ? (
                 <p className="mt-1 text-xs text-fog-400">{ship.popularity_notes}</p>
               ) : null}

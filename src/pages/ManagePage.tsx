@@ -241,6 +241,18 @@ export function ManagePage() {
           >
             Download CSV template
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setLastVerified(today)
+              setMsg(
+                `Marked schedule checked against Port PDF for ${today}. Shown on the public Today page.`,
+              )
+            }}
+            className="rounded-full border border-spruce-700 bg-spruce-900 px-4 py-2 text-sm font-semibold text-fog-50"
+          >
+            Mark schedule checked
+          </button>
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { DayForecast } from '../types'
+import { facebookShareText } from '../lib/downtownNow'
 import { formatShortDate } from '../lib/utils'
+import type { DayForecast } from '../types'
 
 export function ShareDayButton({ day }: { day: DayForecast }) {
   const [status, setStatus] = useState<string | null>(null)
@@ -30,6 +31,16 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
     }
   }
 
+  const copyFacebook = async () => {
+    const text = `${facebookShareText(day)}\n${url}`
+    try {
+      await navigator.clipboard.writeText(text)
+      setStatus('Facebook text copied.')
+    } catch {
+      window.prompt('Copy this for Facebook:', text)
+    }
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       <button
@@ -38,6 +49,13 @@ export function ShareDayButton({ day }: { day: DayForecast }) {
         className="rounded-full bg-spruce-900 px-4 py-2 text-sm font-semibold text-fog-50"
       >
         Share this day
+      </button>
+      <button
+        type="button"
+        onClick={() => void copyFacebook()}
+        className="rounded-full border border-[#1877F2]/40 bg-[#1877F2]/10 px-4 py-2 text-sm font-semibold text-[#166FE5]"
+      >
+        Copy for Facebook
       </button>
       <a
         href={`/day/${day.date}`}

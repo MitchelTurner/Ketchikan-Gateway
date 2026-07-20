@@ -109,11 +109,17 @@ export function InsightsPage() {
         </ul>
       </section>
 
-      <section>
-        <h2 className="font-display text-xl font-semibold text-spruce-900">
-          How the prediction works
-        </h2>
-        <ol className="mt-4 space-y-3 text-sm leading-relaxed text-fog-700">
+      <details className="group rounded-2xl border border-fog-200 bg-white/70 open:bg-white/90">
+        <summary className="cursor-pointer list-none px-4 py-4 font-display text-xl font-semibold text-spruce-900 marker:content-none [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center justify-between gap-3">
+            How the prediction works
+            <span className="text-sm font-medium text-fog-500 group-open:hidden">Show</span>
+            <span className="hidden text-sm font-medium text-fog-500 group-open:inline">
+              Hide
+            </span>
+          </span>
+        </summary>
+        <ol className="space-y-3 border-t border-fog-100 px-4 py-4 text-sm leading-relaxed text-fog-700">
           <li className="rounded-xl border border-fog-200 bg-white/70 px-4 py-3">
             <strong className="text-spruce-900">1. Schedule + weights</strong> — sum estimated
             (or actual) passengers, then weight mega-ships higher and expedition / anchorage
@@ -137,7 +143,7 @@ export function InsightsPage() {
             Busy ≤10k, Extreme &gt;10k → Quiet / Okay / Avoid 10–2.
           </li>
         </ol>
-      </section>
+      </details>
 
       {rainRelief.length > 0 && (
         <section>
