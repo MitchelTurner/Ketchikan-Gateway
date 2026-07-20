@@ -30,7 +30,7 @@ export function currentShoreSnapshot(day: DayForecast) {
   return { hour, passengers, shipsNow, level, point }
 }
 
-/** Short answer for sticky bar / hero. */
+/** Short answer for sticky bar / hero — based on right now, not the whole day. */
 export function shouldGoDowntown(day: DayForecast): {
   verdict: DowntownVerdict
   label: string
@@ -39,34 +39,49 @@ export function shouldGoDowntown(day: DayForecast): {
 } {
   const snap = currentShoreSnapshot(day)
   const active = day.ships.filter((s) => !s.cancelled)
+  const laterGetsBusy =
+    day.verdict === 'okay' || day.verdict === 'avoid'
 
   if (active.length === 0) {
     return {
       verdict: 'quiet',
-      label: 'Quiet',
-      short: 'Yes — go downtown',
-      detail: 'No ships in the schedule. Town should feel open.',
+      label: 'Pretty empty',
+      short: 'Yes — town is pretty empty',
+      detail: 'No ships in the schedule. Downtown should feel open.',
     }
   }
 
-  // Prefer live hour when ships are alongside; else day verdict
-  const usingNow = snap.shipsNow.length > 0
-  const verdict: DowntownVerdict = usingNow
-    ? snap.level === 'extreme'
+  // Empty right now (no ships alongside, little/no shore traffic) — even on a busy day later
+  const emptyNow =
+    snap.shipsNow.length === 0 &&
+    snap.passengers < 800 &&
+    (snap.level === 'low' || snap.level === 'moderate')
+
+  if (emptyNow) {
+    return {
+      verdict: 'quiet',
+      label: 'Pretty empty',
+      short: 'Yes — town is pretty empty',
+      detail: laterGetsBusy
+        ? `Almost no one ashore right now (~${snap.passengers.toLocaleString()}). It may get busier later — ${day.verdictLabel.toLowerCase()} once ships overlap.`
+        : `Almost no one ashore right now (~${snap.passengers.toLocaleString()}). Good window to head downtown.`,
+    }
+  }
+
+  // Ships alongside — use this hour’s crowd
+  const verdict: DowntownVerdict =
+    snap.level === 'extreme'
       ? 'avoid'
       : snap.level === 'busy'
         ? 'okay'
         : 'quiet'
-    : day.verdict
 
   if (verdict === 'avoid') {
     return {
       verdict,
       label: 'Avoid 10–2',
       short: 'No — skip downtown now',
-      detail: usingNow
-        ? `~${snap.passengers.toLocaleString()} ashore this hour with ${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} alongside.`
-        : day.verdictDetail,
+      detail: `~${snap.passengers.toLocaleString()} ashore this hour with ${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} alongside.`,
     }
   }
 
@@ -75,9 +90,7 @@ export function shouldGoDowntown(day: DayForecast): {
       verdict,
       label: 'Okay — time it',
       short: 'Maybe — time it carefully',
-      detail: usingNow
-        ? `Busy right now (~${snap.passengers.toLocaleString()} ashore). Quick stops are fine; skip lingering on Creek Street.`
-        : day.verdictDetail,
+      detail: `Busy right now (~${snap.passengers.toLocaleString()} ashore). Quick stops are fine; skip lingering on Creek Street.`,
     }
   }
 
@@ -85,9 +98,7 @@ export function shouldGoDowntown(day: DayForecast): {
     verdict: 'quiet',
     label: 'Quiet',
     short: 'Yes — go downtown',
-    detail: usingNow
-      ? `Light traffic (~${snap.passengers.toLocaleString()} ashore). Good window.`
-      : day.verdictDetail,
+    detail: `Light traffic (~${snap.passengers.toLocaleString()} ashore). Good window.`,
   }
 }
 

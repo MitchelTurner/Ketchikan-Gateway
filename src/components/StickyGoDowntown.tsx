@@ -41,10 +41,14 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
             {answer.label}
           </span>
           <span className="rounded-full bg-black/15 px-2.5 py-1 tabular-nums">
-            ~{snap.passengers.toLocaleString()} ashore now
+            {snap.shipsNow.length === 0 && snap.passengers < 800
+              ? 'Almost empty now'
+              : `~${snap.passengers.toLocaleString()} ashore now`}
           </span>
           <span className="rounded-full bg-black/15 px-2.5 py-1">
-            {snap.shipsNow.length} ship{snap.shipsNow.length === 1 ? '' : 's'} in
+            {snap.shipsNow.length === 0
+              ? 'No ships in'
+              : `${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in`}
           </span>
         </div>
       </div>
