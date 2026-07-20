@@ -80,7 +80,9 @@ export function DayPage() {
 
       {/* Glanceable share card */}
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-spruce-900 via-channel-700 to-spruce-800 p-6 text-fog-50 shadow-lg">
-        <p className="font-display text-2xl font-semibold text-dawn-400">KTN Port</p>
+        <p className="font-display text-2xl font-semibold text-dawn-400">
+          Ketchikan Port Traffic
+        </p>
         <p className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">
           {day.verdictLabel}
         </p>

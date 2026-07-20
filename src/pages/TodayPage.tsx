@@ -52,7 +52,7 @@ export function TodayPage() {
 
         <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-14 sm:pb-20 sm:pt-20">
           <p className="animate-rise font-display text-4xl font-semibold tracking-tight text-dawn-400 sm:text-5xl md:text-6xl">
-            KTN Port
+            Ketchikan Port Traffic
           </p>
           <h1 className="animate-rise-delay-1 mt-4 max-w-2xl font-display text-2xl font-medium leading-snug text-fog-50 sm:text-3xl">
             {loading
