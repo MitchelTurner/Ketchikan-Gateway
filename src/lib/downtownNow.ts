@@ -57,14 +57,14 @@ export function shouldGoDowntown(day: DayForecast): {
   if (active.length === 0 || snap.shipsNow.length === 0) {
     return {
       verdict: 'quiet',
-      label: 'Pretty empty',
-      short: 'Yes — town is pretty empty',
+      label: 'Quiet',
+      short: 'Yes — go downtown',
       detail:
         active.length === 0
-          ? 'No ships in the schedule. Downtown should feel open.'
+          ? 'Nothing on the schedule today.'
           : laterGetsBusy
-            ? 'No ships alongside right now — downtown should feel pretty empty. It may get busier later when calls overlap.'
-            : 'No ships alongside right now — downtown should feel pretty empty.',
+            ? 'Clear right now. It may get busier later when calls overlap.'
+            : 'Clear right now — good window.',
     }
   }
 

@@ -9,6 +9,7 @@ export function RightNowPanel({ day }: { day: DayForecast }) {
   const hour = snap.hour
   const displayHour = hour % 12 === 0 ? 12 : hour % 12
   const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hasShips = snap.shipsNow.length > 0
 
   return (
     <div className="rounded-2xl border border-spruce-800/20 bg-spruce-900 px-4 py-4 text-fog-50 sm:px-5 sm:py-5">
@@ -19,19 +20,19 @@ export function RightNowPanel({ day }: { day: DayForecast }) {
             {ampm} AK
           </p>
           <p className="mt-1 font-display text-xl font-semibold leading-snug sm:text-2xl">
-            {snap.shipsNow.length === 0
-              ? 'No ships alongside'
-              : `${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in port`}
+            {hasShips
+              ? `${snap.shipsNow.length} ship${snap.shipsNow.length === 1 ? '' : 's'} in port`
+              : answer.short}
           </p>
         </div>
-        <span className="w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
-          {snap.shipsNow.length === 0
-            ? 'Pretty empty'
-            : `${meta.label} · ~${snap.passengers.toLocaleString()} ashore`}
-        </span>
+        {hasShips ? (
+          <span className="w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+            {meta.label} · ~{snap.passengers.toLocaleString()} ashore
+          </span>
+        ) : null}
       </div>
       <p className="mt-3 text-sm leading-relaxed text-channel-200">{answer.detail}</p>
-      {snap.shipsNow.length > 0 && (
+      {hasShips ? (
         <ul className="mt-3 flex flex-wrap gap-2">
           {snap.shipsNow.map((s) => (
             <li
@@ -42,7 +43,7 @@ export function RightNowPanel({ day }: { day: DayForecast }) {
             </li>
           ))}
         </ul>
-      )}
+      ) : null}
     </div>
   )
 }

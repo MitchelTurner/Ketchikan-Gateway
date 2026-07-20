@@ -82,10 +82,7 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
   }, [dayStamp])
 
   const { answer, snap } = view
-  const emptyNow = snap.shipsNow.length === 0
-  const chip = emptyNow
-    ? 'No ships in'
-    : `${snap.shipsNow.length} in · ~${snap.passengers.toLocaleString()}`
+  const showStats = snap.shipsNow.length > 0
 
   return (
     <div className={`sticky top-[3.25rem] z-30 border-b sm:top-[3.6rem] ${TONE[answer.verdict]}`}>
@@ -98,14 +95,16 @@ export function StickyGoDowntown({ day }: { day: DayForecast }) {
             {answer.short}
           </p>
         </div>
-        <div className="shrink-0 text-right">
-          <p className="rounded-full bg-black/15 px-2.5 py-1 text-[0.65rem] font-semibold sm:text-xs">
-            {answer.label}
-          </p>
-          <p className="mt-1 hidden text-[0.65rem] font-semibold opacity-90 sm:block">
-            {chip}
-          </p>
-        </div>
+        {showStats ? (
+          <div className="shrink-0 text-right">
+            <p className="rounded-full bg-black/15 px-2.5 py-1 text-[0.65rem] font-semibold sm:text-xs">
+              {answer.label}
+            </p>
+            <p className="mt-1 hidden text-[0.65rem] font-semibold opacity-90 sm:block">
+              {snap.shipsNow.length} in · ~{snap.passengers.toLocaleString()}
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   )
