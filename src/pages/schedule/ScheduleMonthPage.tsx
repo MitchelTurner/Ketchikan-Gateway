@@ -8,9 +8,17 @@ import {
   websiteJsonLd,
 } from '../../lib/seo/jsonld'
 import { buildMeta } from '../../lib/seo/meta'
-import { isYear, monthIndex, monthLabel } from '../../lib/seo/slugs'
+import { isYear, monthIndex, monthLabel, monthSlug } from '../../lib/seo/slugs'
 import { CROWD_META, daysInMonth, firstWeekday } from '../../lib/utils'
 import type { CrowdLevel } from '../../types'
+
+function adjacentMonth(year: number, monthIndex0: number, delta: number) {
+  const d = new Date(year, monthIndex0 + delta, 1)
+  return {
+    year: d.getFullYear(),
+    month: monthSlug(d.getMonth()),
+  }
+}
 
 const CELL: Record<CrowdLevel, string> = {
   low: 'border-spruce-200 bg-spruce-100 text-spruce-800 hover:border-spruce-400',
@@ -63,11 +71,35 @@ export function ScheduleMonthPage() {
         jsonLd={[organizationJsonLd(), websiteJsonLd(), breadcrumbJsonLd(crumbs)]}
       />
       <Breadcrumbs items={crumbs} />
-      <header>
-        <h1 className="font-display text-2xl font-semibold text-spruce-900 sm:text-3xl">
-          {meta.h1}
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-fog-600 sm:text-base">
+      <header className="space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="font-display text-2xl font-semibold text-spruce-900 sm:text-3xl">
+            {meta.h1}
+          </h1>
+          <div className="flex flex-wrap gap-2">
+            {(() => {
+              const prev = adjacentMonth(year, mi, -1)
+              const next = adjacentMonth(year, mi, 1)
+              return (
+                <>
+                  <Link
+                    to={`/schedule/${prev.year}/${prev.month}`}
+                    className="rounded-full border border-fog-300 bg-white px-3 py-1.5 text-sm font-semibold text-fog-700 no-underline hover:border-channel-400"
+                  >
+                    ← {monthLabel(prev.month)}
+                  </Link>
+                  <Link
+                    to={`/schedule/${next.year}/${next.month}`}
+                    className="rounded-full border border-fog-300 bg-white px-3 py-1.5 text-sm font-semibold text-fog-700 no-underline hover:border-channel-400"
+                  >
+                    {monthLabel(next.month)} →
+                  </Link>
+                </>
+              )
+            })()}
+          </div>
+        </div>
+        <p className="max-w-2xl text-sm text-fog-600 sm:text-base">
           Tap a date for ships, berths, and the downtown forecast. Color is by{' '}
           <strong className="font-semibold text-spruce-800">scheduled cruise capacity</strong>
           — not weather — so the month view stays stable as forecasts change.
