@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { BrandMark } from '../components/BrandMark'
 import { CancelledShipsBanner } from '../components/CancelledShipsBanner'
 import { CapacitySplit } from '../components/CapacitySplit'
 import { ConfidenceBadge } from '../components/ConfidenceBadge'
@@ -71,12 +70,9 @@ export function TodayPage() {
         />
 
         <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-8 sm:px-4 sm:pb-14 sm:pt-12">
-          <div className="animate-rise flex items-center gap-3 sm:gap-4">
-            <BrandMark className="h-14 w-14 shadow-lg sm:h-20 sm:w-20" />
-            <p className="font-display text-3xl font-semibold tracking-tight text-dawn-400 sm:text-5xl md:text-6xl">
-              KTN Port
-            </p>
-          </div>
+          <p className="animate-rise font-display text-3xl font-semibold tracking-tight text-dawn-400 sm:text-5xl md:text-6xl">
+            KTN Port
+          </p>
           <h1 className="animate-rise-delay-1 mt-3 max-w-2xl font-display text-xl font-medium leading-snug text-fog-50 sm:mt-4 sm:text-3xl">
             {meta.h1}
           </h1>
