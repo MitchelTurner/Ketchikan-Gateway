@@ -68,8 +68,9 @@ export function ScheduleMonthPage() {
           {meta.h1}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-fog-600 sm:text-base">
-          Tap a date for ships, berths, and the downtown crowd forecast. Color shows
-          weather-adjusted busyness.
+          Tap a date for ships, berths, and the downtown forecast. Color is by{' '}
+          <strong className="font-semibold text-spruce-800">scheduled cruise capacity</strong>
+          — not weather — so the month view stays stable as forecasts change.
         </p>
       </header>
 
@@ -78,10 +79,17 @@ export function ScheduleMonthPage() {
           <span className="h-2.5 w-2.5 rounded-sm bg-fog-200 ring-1 ring-fog-300" />
           Quiet
         </li>
-        {(Object.keys(CROWD_META) as CrowdLevel[]).map((level) => (
+        {(
+          [
+            ['low', 'Low ≤3k'],
+            ['moderate', 'Moderate ≤6k'],
+            ['busy', 'Busy ≤10k'],
+            ['extreme', 'Extreme >10k'],
+          ] as const
+        ).map(([level, label]) => (
           <li key={level} className="flex items-center gap-1.5">
             <span className={`h-2.5 w-2.5 rounded-sm ${DOT[level]}`} />
-            {CROWD_META[level].label}
+            {label}
           </li>
         ))}
       </ul>
@@ -102,7 +110,8 @@ export function ScheduleMonthPage() {
           const day = getDay(iso)
           const n = day.ships.filter((s) => !s.cancelled).length
           const dom = Number(iso.slice(8, 10))
-          const level = day.weatherAdjustedCrowd
+          // Schedule capacity band — stable vs weather-adjusted forecasts
+          const level = day.crowdLevel
           const tone =
             n === 0
               ? 'border-fog-200 bg-white/70 text-fog-400 hover:border-fog-300'
@@ -115,7 +124,7 @@ export function ScheduleMonthPage() {
               aria-label={
                 n === 0
                   ? `${iso}: no ships`
-                  : `${iso}: ${n} ships, ${CROWD_META[level].label}`
+                  : `${iso}: ${n} ships, ${day.scheduledPassengers.toLocaleString()} scheduled passengers, ${CROWD_META[level].label}`
               }
             >
               <span className="text-[0.7rem] font-semibold sm:text-xs">{dom}</span>
@@ -140,7 +149,7 @@ export function ScheduleMonthPage() {
           const iso = `${year}-${String(mi + 1).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`
           const day = getDay(iso)
           const n = day.ships.filter((s) => !s.cancelled).length
-          const level = day.weatherAdjustedCrowd
+          const level = day.crowdLevel
           return (
             <li key={iso}>
               <Link
@@ -164,7 +173,7 @@ export function ScheduleMonthPage() {
                 <span className="text-xs tabular-nums text-fog-600 sm:text-sm">
                   {n === 0
                     ? 'Quiet'
-                    : `${CROWD_META[level].label} · ${day.scheduledPassengers.toLocaleString()} pax`}
+                    : `${day.scheduledPassengers.toLocaleString()} pax · ${CROWD_META[level].label}`}
                 </span>
               </Link>
             </li>
