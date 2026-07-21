@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { BrandMark, BrandWordmark } from './BrandMark'
 import { useAdminAuth } from '../hooks/useAdminAuth'
 import { useGatewayData } from '../hooks/useGatewayData'
 import { GatewayContext } from '../hooks/GatewayContext'
@@ -22,13 +23,12 @@ export function Layout() {
       <div className="flex min-h-dvh flex-col">
         <header className="sticky top-0 z-40 border-b border-spruce-900/10 bg-[#f4f7f8]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
           <div className="mx-auto flex max-w-5xl items-center gap-3 px-3 py-2.5 sm:gap-4 sm:px-4 sm:py-3">
-            <NavLink to="/" className="min-w-0 shrink-0 no-underline">
-              <span className="block font-display text-base font-semibold leading-none tracking-[0.06em] text-spruce-900 sm:text-[1.15rem]">
-                KTN PORT
-              </span>
-              <span className="mt-0.5 hidden text-[0.65rem] font-medium tracking-[0.1em] text-fog-500 uppercase sm:block">
-                Ketchikan cruise crowds
-              </span>
+            <NavLink
+              to="/"
+              className="group flex min-w-0 shrink-0 items-center gap-2.5 no-underline sm:gap-3"
+            >
+              <BrandMark className="h-9 w-9 sm:h-10 sm:w-10" />
+              <BrandWordmark subtitle="Ketchikan cruise crowds" />
             </NavLink>
 
             <nav
@@ -63,13 +63,14 @@ export function Layout() {
         <footer className="mt-auto border-t border-spruce-900/10 bg-spruce-950 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-fog-200">
           <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8 sm:gap-6 sm:py-10">
             <div className="flex flex-col gap-5 sm:flex-row sm:justify-between">
-              <div className="min-w-0">
-                <p className="font-display text-lg tracking-[0.06em] text-fog-50">
-                  KTN PORT
-                </p>
-                <p className="mt-1 max-w-md text-sm leading-relaxed text-fog-300">
-                  Unofficial cruise passenger forecasts for downtown Ketchikan.
-                </p>
+              <div className="flex min-w-0 items-start gap-3">
+                <BrandMark className="h-11 w-11 shrink-0" />
+                <div>
+                  <BrandWordmark invert subtitle={null} />
+                  <p className="mt-1.5 max-w-md text-sm leading-relaxed text-fog-300">
+                    Unofficial cruise passenger forecasts for downtown Ketchikan.
+                  </p>
+                </div>
               </div>
               <nav
                 className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:gap-x-8"

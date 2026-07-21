@@ -9,7 +9,13 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'ship_visits.json'],
+      includeAssets: [
+        'favicon.svg',
+        'ktn_logo.png',
+        'ktn_logo-192.png',
+        'apple-touch-icon.png',
+        'ship_visits.json',
+      ],
       manifest: {
         name: 'KTN Port',
         short_name: 'KTN Port',
@@ -26,21 +32,27 @@ export default defineConfig({
             short_name: 'Today',
             description: 'Should I go downtown right now?',
             url: '/',
-            icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
+            icons: [{ src: '/ktn_logo-192.png', sizes: '192x192', type: 'image/png' }],
           },
           {
             name: 'Tomorrow',
             short_name: 'Tomorrow',
             description: 'Tomorrow’s cruise crowd forecast',
             url: '/schedule/tomorrow',
-            icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
+            icons: [{ src: '/ktn_logo-192.png', sizes: '192x192', type: 'image/png' }],
           },
         ],
         icons: [
           {
-            src: '/favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: '/ktn_logo-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/ktn_logo.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any maskable',
           },
         ],
