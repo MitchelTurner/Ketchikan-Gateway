@@ -1,5 +1,6 @@
 import { WEATHER_META } from '../lib/utils'
 import type { DayWeather } from '../types'
+import { WeatherIcon } from './WeatherIcon'
 
 function hourLabel(hour: number): string {
   const h = hour % 12 === 0 ? 12 : hour % 12
@@ -24,70 +25,6 @@ function nextDryWindow(weather: DayWeather): string | null {
   return driest ? `Least rain near ${hourLabel(driest.hour)}` : null
 }
 
-function WeatherGlyph({ condition }: { condition: DayWeather['condition'] }) {
-  const common = 'h-8 w-8'
-  switch (condition) {
-    case 'sunny':
-      return (
-        <svg viewBox="0 0 32 32" className={common} aria-hidden>
-          <circle cx="16" cy="16" r="6" fill="#E8C56A" />
-          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-            <line
-              key={deg}
-              x1="16"
-              y1="3"
-              x2="16"
-              y2="7"
-              stroke="#E8C56A"
-              strokeWidth="2"
-              strokeLinecap="round"
-              transform={`rotate(${deg} 16 16)`}
-            />
-          ))}
-        </svg>
-      )
-    case 'partly-cloudy':
-      return (
-        <svg viewBox="0 0 32 32" className={common} aria-hidden>
-          <circle cx="11" cy="12" r="5" fill="#E8C56A" />
-          <path
-            d="M10 22h14a5 5 0 0 0 0-10 6.5 6.5 0 0 0-12.2 2A4.5 4.5 0 0 0 10 22z"
-            fill="#8a9aa3"
-          />
-        </svg>
-      )
-    case 'cloudy':
-      return (
-        <svg viewBox="0 0 32 32" className={common} aria-hidden>
-          <path
-            d="M8 22h15a5 5 0 0 0 0-10 6.5 6.5 0 0 0-12.5 2.2A4.5 4.5 0 0 0 8 22z"
-            fill="#6b7c86"
-          />
-        </svg>
-      )
-    case 'storm':
-      return (
-        <svg viewBox="0 0 32 32" className={common} aria-hidden>
-          <path
-            d="M8 16h15a5 5 0 0 0 0-10 6.5 6.5 0 0 0-12.5 2.2A4.5 4.5 0 0 0 8 16z"
-            fill="#3d4a52"
-          />
-          <path d="M15 17l-3 6h3l-2 5 7-8h-3l2-3z" fill="#E8C56A" />
-        </svg>
-      )
-    default:
-      return (
-        <svg viewBox="0 0 32 32" className={common} aria-hidden>
-          <path
-            d="M8 16h15a5 5 0 0 0 0-10 6.5 6.5 0 0 0-12.5 2.2A4.5 4.5 0 0 0 8 16z"
-            fill="#5aa3a6"
-          />
-          <path d="M12 20v4M16 19v5M20 20v4" stroke="#2a6b6e" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-      )
-  }
-}
-
 export function WeatherPanel({
   weather,
   compact = false,
@@ -101,7 +38,7 @@ export function WeatherPanel({
   if (compact) {
     return (
       <div className="inline-flex items-center gap-2 rounded-full border border-channel-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-fog-700">
-        <WeatherGlyph condition={weather.condition} />
+        <WeatherIcon condition={weather.condition} className="h-8 w-8" />
         <span>
           {weather.tempHighF}° / {weather.tempLowF}°
         </span>
@@ -124,7 +61,7 @@ export function WeatherPanel({
             Low {weather.tempLowF}° · {meta.label}
           </p>
         </div>
-        <WeatherGlyph condition={weather.condition} />
+        <WeatherIcon condition={weather.condition} className="h-8 w-8" />
       </div>
 
       <dl className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">

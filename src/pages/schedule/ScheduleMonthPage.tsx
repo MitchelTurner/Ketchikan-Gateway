@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
 import { Seo } from '../../components/Seo'
+import { WeatherIcon } from '../../components/WeatherIcon'
 import { useGateway } from '../../hooks/GatewayContext'
 import {
   breadcrumbJsonLd,
@@ -9,7 +10,7 @@ import {
 } from '../../lib/seo/jsonld'
 import { buildMeta } from '../../lib/seo/meta'
 import { isYear, monthIndex, monthLabel, monthSlug } from '../../lib/seo/slugs'
-import { CROWD_META, daysInMonth, firstWeekday } from '../../lib/utils'
+import { CROWD_META, daysInMonth, firstWeekday, WEATHER_META } from '../../lib/utils'
 import type { CrowdLevel } from '../../types'
 
 function adjacentMonth(year: number, monthIndex0: number, delta: number) {
@@ -100,31 +101,56 @@ export function ScheduleMonthPage() {
           </div>
         </div>
         <p className="max-w-2xl text-sm text-fog-600 sm:text-base">
-          Tap a date for ships, berths, and the downtown forecast. Color is by{' '}
+          Tap a date for ships, berths, and the downtown forecast. Cell color is{' '}
           <strong className="font-semibold text-spruce-800">scheduled cruise capacity</strong>
-          — not weather — so the month view stays stable as forecasts change.
+          ; the icon is the weather outlook (live forecast when available, seasonal otherwise).
         </p>
       </header>
 
-      <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.7rem] font-medium text-fog-600 sm:text-xs">
-        <li className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-fog-200 ring-1 ring-fog-300" />
-          Quiet
-        </li>
-        {(
-          [
-            ['low', 'Low ≤3k'],
-            ['moderate', 'Moderate ≤6k'],
-            ['busy', 'Busy ≤10k'],
-            ['extreme', 'Extreme >10k'],
-          ] as const
-        ).map(([level, label]) => (
-          <li key={level} className="flex items-center gap-1.5">
-            <span className={`h-2.5 w-2.5 rounded-sm ${DOT[level]}`} />
-            {label}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-2">
+        <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.7rem] font-medium text-fog-600 sm:text-xs">
+          <li className="w-full text-[0.65rem] font-semibold tracking-wide text-fog-400 uppercase sm:w-auto sm:mr-1">
+            Capacity
           </li>
-        ))}
-      </ul>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm bg-fog-200 ring-1 ring-fog-300" />
+            Quiet
+          </li>
+          {(
+            [
+              ['low', 'Low ≤3k'],
+              ['moderate', 'Moderate ≤6k'],
+              ['busy', 'Busy ≤10k'],
+              ['extreme', 'Extreme >10k'],
+            ] as const
+          ).map(([level, label]) => (
+            <li key={level} className="flex items-center gap-1.5">
+              <span className={`h-2.5 w-2.5 rounded-sm ${DOT[level]}`} />
+              {label}
+            </li>
+          ))}
+        </ul>
+        <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[0.7rem] font-medium text-fog-600 sm:text-xs">
+          <li className="w-full text-[0.65rem] font-semibold tracking-wide text-fog-400 uppercase sm:w-auto sm:mr-1">
+            Weather
+          </li>
+          {(
+            [
+              'sunny',
+              'partly-cloudy',
+              'cloudy',
+              'light-rain',
+              'rain',
+              'storm',
+            ] as const
+          ).map((condition) => (
+            <li key={condition} className="flex items-center gap-1">
+              <WeatherIcon condition={condition} className="h-4 w-4" />
+              <span className="hidden sm:inline">{WEATHER_META[condition].label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="grid grid-cols-7 gap-0.5 text-center text-[0.6rem] font-semibold tracking-wide text-fog-400 uppercase sm:gap-1 sm:text-[0.65rem]">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
@@ -144,6 +170,8 @@ export function ScheduleMonthPage() {
           const dom = Number(iso.slice(8, 10))
           // Schedule capacity band — stable vs weather-adjusted forecasts
           const level = day.crowdLevel
+          const wx = day.weather
+          const wxLabel = wx ? WEATHER_META[wx.condition].label : null
           const tone =
             n === 0
               ? 'border-fog-200 bg-white/70 text-fog-400 hover:border-fog-300'
@@ -152,14 +180,23 @@ export function ScheduleMonthPage() {
             <Link
               key={iso}
               to={`/schedule/${iso}`}
-              className={`flex min-h-14 flex-col rounded-lg border p-1 no-underline transition sm:min-h-[5.5rem] sm:rounded-xl sm:p-2 ${tone}`}
+              className={`relative flex min-h-14 flex-col rounded-lg border p-1 no-underline transition sm:min-h-[5.5rem] sm:rounded-xl sm:p-2 ${tone}`}
               aria-label={
                 n === 0
-                  ? `${iso}: no ships`
-                  : `${iso}: ${n} ships, ${day.scheduledPassengers.toLocaleString()} scheduled passengers, ${CROWD_META[level].label}`
+                  ? `${iso}: no ships${wxLabel ? `, ${wxLabel}` : ''}`
+                  : `${iso}: ${n} ships, ${day.scheduledPassengers.toLocaleString()} scheduled passengers, ${CROWD_META[level].label}${wxLabel ? `, ${wxLabel}` : ''}`
               }
             >
-              <span className="text-[0.7rem] font-semibold sm:text-xs">{dom}</span>
+              <span className="flex items-start justify-between gap-0.5">
+                <span className="text-[0.7rem] font-semibold sm:text-xs">{dom}</span>
+                {wx && (
+                  <WeatherIcon
+                    condition={wx.condition}
+                    className="h-3.5 w-3.5 shrink-0 sm:h-5 sm:w-5"
+                    title={wxLabel ?? undefined}
+                  />
+                )}
+              </span>
               <span className="mt-auto text-[0.55rem] leading-tight opacity-90 sm:text-[0.65rem]">
                 {n === 0 ? '—' : `${n}`}
                 <span className="hidden sm:inline">
@@ -182,6 +219,7 @@ export function ScheduleMonthPage() {
           const day = getDay(iso)
           const n = day.ships.filter((s) => !s.cancelled).length
           const level = day.crowdLevel
+          const wx = day.weather
           return (
             <li key={iso}>
               <Link
@@ -200,12 +238,21 @@ export function ScheduleMonthPage() {
                       aria-hidden
                     />
                   )}
+                  {wx && (
+                    <WeatherIcon
+                      condition={wx.condition}
+                      className="h-5 w-5 shrink-0"
+                      title={WEATHER_META[wx.condition].label}
+                    />
+                  )}
                   {iso.slice(8)} · {n === 0 ? 'No ships' : `${n} ships`}
                 </span>
                 <span className="text-xs tabular-nums text-fog-600 sm:text-sm">
                   {n === 0
-                    ? 'Quiet'
-                    : `${day.scheduledPassengers.toLocaleString()} pax · ${CROWD_META[level].label}`}
+                    ? wx
+                      ? `Quiet · ${WEATHER_META[wx.condition].label}`
+                      : 'Quiet'
+                    : `${day.scheduledPassengers.toLocaleString()} pax · ${CROWD_META[level].label}${wx ? ` · ${WEATHER_META[wx.condition].label}` : ''}`}
                 </span>
               </Link>
             </li>
