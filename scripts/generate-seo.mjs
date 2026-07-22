@@ -153,7 +153,7 @@ const coreUrls = [
   { path: '/ships', title: 'Cruise Ships Calling at Ketchikan | KTN Port', desc: 'Index of cruise ships that call at Ketchikan.', priority: '0.8', changefreq: 'weekly' },
   { path: '/stats', title: 'Ketchikan Cruise Passenger Statistics | KTN Port', desc: 'Season totals, busiest cruise days, and passenger trends.', priority: '0.8', changefreq: 'weekly' },
   { path: '/berths', title: 'Ketchikan Cruise Ship Berths — Which Ships Dock Where', desc: 'Downtown berths 1–4, Ward Cove, and anchorage explained.', priority: '0.7', changefreq: 'monthly' },
-  { path: '/guides', title: 'Guides to Planning Around Ketchikan Cruise Crowds | KTN Port', desc: 'Things to do, attractions, and practical guides for planning around Ketchikan cruise crowds.', priority: '0.7', changefreq: 'monthly' },
+  { path: '/guides', title: 'Guides to Planning Around Ketchikan Cruise Crowds | KTN Port', desc: 'Practical guides for locals and visitors.', priority: '0.7', changefreq: 'monthly' },
   { path: '/about', title: 'About KTN Port | KTN Port', desc: 'Unofficial public tool reporting Ketchikan cruise passenger traffic.', priority: '0.5', changefreq: 'yearly' },
   { path: '/data-sources', title: 'Data Sources & Methodology | KTN Port', desc: 'Where schedule and capacity data come from.', priority: '0.5', changefreq: 'yearly' },
   { path: '/api', title: 'KTN Port Data Access | KTN Port', desc: 'How to access Ketchikan cruise schedule data.', priority: '0.3', changefreq: 'yearly' },
