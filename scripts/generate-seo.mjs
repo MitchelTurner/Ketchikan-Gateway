@@ -153,13 +153,14 @@ const coreUrls = [
   { path: '/ships', title: 'Cruise Ships Calling at Ketchikan | KTN Port', desc: 'Index of cruise ships that call at Ketchikan.', priority: '0.8', changefreq: 'weekly' },
   { path: '/stats', title: 'Ketchikan Cruise Passenger Statistics | KTN Port', desc: 'Season totals, busiest cruise days, and passenger trends.', priority: '0.8', changefreq: 'weekly' },
   { path: '/berths', title: 'Ketchikan Cruise Ship Berths — Which Ships Dock Where', desc: 'Downtown berths 1–4, Ward Cove, and anchorage explained.', priority: '0.7', changefreq: 'monthly' },
-  { path: '/guides', title: 'Guides to Planning Around Ketchikan Cruise Crowds | KTN Port', desc: 'Practical guides for locals and visitors.', priority: '0.7', changefreq: 'monthly' },
+  { path: '/guides', title: 'Ketchikan Guides: Things to Do & Cruise Crowds | KTN Port', desc: 'Things to do, attractions, and practical guides for planning around Ketchikan cruise crowds.', priority: '0.7', changefreq: 'monthly' },
   { path: '/about', title: 'About KTN Port | KTN Port', desc: 'Unofficial public tool reporting Ketchikan cruise passenger traffic.', priority: '0.5', changefreq: 'yearly' },
   { path: '/data-sources', title: 'Data Sources & Methodology | KTN Port', desc: 'Where schedule and capacity data come from.', priority: '0.5', changefreq: 'yearly' },
   { path: '/api', title: 'KTN Port Data Access | KTN Port', desc: 'How to access Ketchikan cruise schedule data.', priority: '0.3', changefreq: 'yearly' },
-  { path: '/guides/best-time-to-visit-ketchikan', title: 'Best Time to Visit Ketchikan Without Crowds | KTN Port', desc: 'How to time a Ketchikan visit around the cruise calendar.', priority: '0.7', changefreq: 'monthly' },
-  { path: '/guides/ketchikan-berth-locations-explained', title: 'Ketchikan Berth Locations Explained | KTN Port', desc: 'Downtown berths vs Ward Cove vs anchorage.', priority: '0.7', changefreq: 'monthly' },
-  { path: '/guides/ketchikan-shore-excursions-timing', title: 'Ketchikan Shore Excursions Timing | KTN Port', desc: 'When to book tours around ship windows and rain.', priority: '0.7', changefreq: 'monthly' },
+  { path: '/guides/things-to-do-in-ketchikan', title: 'Things to Do in Ketchikan Alaska | KTN Port', desc: 'Ketchikan attractions and things to see — Creek Street, rainforest walks, hiking trails, totem parks, and timing tips around cruise crowds.', priority: '0.8', changefreq: 'monthly' },
+  { path: '/guides/best-time-to-visit-ketchikan', title: 'Best Time to Visit Ketchikan Alaska | KTN Port', desc: 'Best time to visit Ketchikan Alaska without cruise crowds — shoulder months, quiet weekdays, and how to read a multi-ship day.', priority: '0.7', changefreq: 'monthly' },
+  { path: '/guides/ketchikan-berth-locations-explained', title: 'Ketchikan Cruise Berths Explained | KTN Port', desc: 'Downtown berths 1–4 vs Ward Cove vs anchorage tenders — and why dock assignment changes Creek Street crowds.', priority: '0.7', changefreq: 'monthly' },
+  { path: '/guides/ketchikan-shore-excursions-timing', title: 'Ketchikan Shore Excursions: Timing Tips | KTN Port', desc: 'When to book Ketchikan shore excursions, when to DIY downtown, and how ship windows and rain change the plan.', priority: '0.7', changefreq: 'monthly' },
 ]
 
 const scheduleUrls = []

@@ -44,7 +44,18 @@ export function Seo({
     upsertMeta('property', 'og:title', meta.title)
     upsertMeta('property', 'og:description', meta.description)
     upsertMeta('property', 'og:url', url)
-    upsertMeta('name', 'twitter:card', 'summary')
+    const imageUrl = meta.image
+      ? meta.image.startsWith('http')
+        ? meta.image
+        : absoluteUrl(meta.image)
+      : undefined
+    if (imageUrl) {
+      upsertMeta('property', 'og:image', imageUrl)
+      upsertMeta('name', 'twitter:card', 'summary_large_image')
+      upsertMeta('name', 'twitter:image', imageUrl)
+    } else {
+      upsertMeta('name', 'twitter:card', 'summary')
+    }
     upsertMeta('name', 'twitter:title', meta.title)
     upsertMeta('name', 'twitter:description', meta.description)
     if (meta.dateModified) {

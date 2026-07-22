@@ -10,6 +10,8 @@ export type PageMeta = {
   robots?: string
   ogType?: string
   dateModified?: string
+  /** Absolute or site-relative path for Open Graph / Twitter image */
+  image?: string
 }
 
 export type MetaInput =
@@ -34,7 +36,14 @@ export type MetaInput =
   | { type: 'ships' }
   | { type: 'stats'; year?: number }
   | { type: 'berths' }
-  | { type: 'guide'; title: string; description: string; slug: string }
+  | {
+      type: 'guide'
+      title: string
+      description: string
+      slug: string
+      image?: string
+      dateModified?: string
+    }
   | { type: 'guides' }
   | { type: 'about' }
   | { type: 'dataSources' }
@@ -156,14 +165,17 @@ export function buildMeta(input: MetaInput): PageMeta {
         description: input.description,
         canonicalPath: `/guides/${input.slug}`,
         h1: input.title,
+        ogType: 'article',
+        image: input.image,
+        dateModified: input.dateModified,
       }
     case 'guides':
       return {
-        title: trunc(`Guides to Planning Around Ketchikan Cruise Crowds | ${SITE_NAME}`, 65),
+        title: trunc(`Ketchikan Guides: Things to Do & Cruise Crowds | ${SITE_NAME}`, 65),
         description:
-          'Practical guides for locals and visitors: when to visit Ketchikan without crowds, berth basics, and shore-excursion timing.',
+          'Ketchikan guides for visitors and locals: things to do and attractions, best time to visit, berth basics, and shore-excursion timing — tied to the live cruise schedule.',
         canonicalPath: '/guides',
-        h1: 'Guides — Plan Around Cruise Crowds',
+        h1: 'Ketchikan Guides — Things to Do & Crowd Planning',
       }
     case 'about':
       return {

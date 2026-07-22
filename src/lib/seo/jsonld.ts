@@ -152,4 +152,38 @@ export function faqJsonLd(faqs: { question: string; answer: string }[]) {
   }
 }
 
+export function articleJsonLd(opts: {
+  title: string
+  description: string
+  path: string
+  dateModified: string
+  image?: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: opts.title,
+    description: opts.description,
+    dateModified: opts.dateModified,
+    datePublished: opts.dateModified,
+    mainEntityOfPage: absoluteUrl(opts.path),
+    image: opts.image ? absoluteUrl(opts.image) : undefined,
+    author: {
+      '@type': 'Organization',
+      name: ORG_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    about: {
+      '@type': 'City',
+      name: 'Ketchikan',
+      containedInPlace: { '@type': 'State', name: 'Alaska' },
+    },
+  }
+}
+
 export { BERTH_PLACES }
