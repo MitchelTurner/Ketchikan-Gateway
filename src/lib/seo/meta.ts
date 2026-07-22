@@ -161,7 +161,7 @@ export function buildMeta(input: MetaInput): PageMeta {
       return {
         title: trunc(`Guides to Planning Around Ketchikan Cruise Crowds | ${SITE_NAME}`, 65),
         description:
-          'Practical guides for locals and visitors: things to do and attractions in Ketchikan, when to visit without crowds, berth basics, and shore-excursion timing.',
+          'Practical guides for locals and visitors: when to visit Ketchikan without crowds, berth basics, and shore-excursion timing.',
         canonicalPath: '/guides',
         h1: 'Guides — Plan Around Cruise Crowds',
       }

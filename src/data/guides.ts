@@ -1,17 +1,5 @@
 export type GuideFaq = { question: string; answer: string }
 
-export type GuideListItem = {
-  name: string
-  detail: string
-}
-
-export type GuideSection = {
-  heading: string
-  body: string[]
-  /** Optional consumer-facing list (attractions, trails, etc.) */
-  items?: GuideListItem[]
-}
-
 export type Guide = {
   slug: string
   title: string
@@ -19,149 +7,11 @@ export type Guide = {
   updated: string
   readMinutes: number
   faqs: GuideFaq[]
-  sections: GuideSection[]
+  /** HTML-ish paragraphs as plain strings */
+  sections: { heading: string; body: string[] }[]
 }
 
 export const GUIDES: Guide[] = [
-  {
-    slug: 'things-to-do-in-ketchikan',
-    title: 'Things to Do in Ketchikan Alaska',
-    description:
-      'Ketchikan attractions and things to see — Creek Street, rainforest walks, hiking trails, totem parks, and how to time tourist spots around cruise crowds.',
-    updated: '2026-07-22',
-    readMinutes: 10,
-    faqs: [
-      {
-        question: 'What are the best things to do in Ketchikan Alaska?',
-        answer:
-          'Top picks for most visitors: Creek Street and Married Man’s Trail downtown, Totem Bight or Saxman for standing totem poles, a temperate rainforest walk (Rainbird Trail or Ward Lake), and — if time allows — Deer Mountain, kayaking on Tongass Narrows, or seasonal bear viewing at Herring Cove. Check the KTN Port day page so you hit walkable downtown attractions before or after the mid-morning ship surge.',
-      },
-      {
-        question: 'What are the top Ketchikan tourist attractions?',
-        answer:
-          'The classic tourist attractions in Ketchikan Alaska are Creek Street, the downtown waterfront and tunnel area, Totem Bight State Historical Park, Saxman Native Village, the Southeast Alaska Discovery Center, and rainforest / canopy experiences near Herring Cove. Hiking trails and quieter lakes are excellent things to see when the docks are packed.',
-      },
-      {
-        question: 'Are there good Ketchikan hiking trails near downtown?',
-        answer:
-          'Yes. Rainbird Trail is a short boardwalk through rainforest with Tongass Narrows views and stays relatively quiet even on busy cruise days. Deer Mountain Trail starts near downtown and climbs to alpine views — crowds thin after the first mile. Ward Lake Recreation Area (about 7 miles north) adds easy loops and picnic spots off the usual excursion routes.',
-      },
-      {
-        question: 'Can I experience the Ketchikan rainforest without a big tour?',
-        answer:
-          'Absolutely. Rainbird Trail and Ward Lake are self-guided rainforest walks. The Discovery Center downtown covers rainforest ecology indoors if weather turns. Canopy zip-line tours near Herring Cove are the booked option; book early or late slots when cruise groups fill mid-morning.',
-      },
-    ],
-    sections: [
-      {
-        heading: 'Ketchikan attractions at a glance',
-        body: [
-          'Ketchikan, Alaska packs a lot into a compact waterfront: historic Creek Street, world-famous totem parks, Tongass National Forest rainforest, and hiking trails that start almost from the docks. Whether you are hunting “things to do in Ketchikan,” comparing Ketchikan tourist attractions, or planning what to see on a short port call, this list covers the highlights locals and cruise guests actually use.',
-          'Crowds swing with the cruise calendar. A multi-ship day can put more than 10,000 passengers ashore; a zero-ship day feels like a different town. Use the live schedule on KTN Port to pick quieter windows — then match attractions below to your time and weather.',
-        ],
-      },
-      {
-        heading: 'Downtown things to see',
-        body: [
-          'These Ketchikan attractions sit within walking distance of berths 1–4. On heavy ship days, visit before about 10 a.m. or after mid-afternoon when sidewalks thin.',
-        ],
-        items: [
-          {
-            name: 'Creek Street & Married Man’s Trail',
-            detail:
-              'Historic boardwalk over Ketchikan Creek — galleries, shops, and salmon viewing in season. The #1 downtown tourist stop; go early or late on busy cruise days.',
-          },
-          {
-            name: 'Southeast Alaska Discovery Center',
-            detail:
-              'Indoor exhibits on rainforest ecology, Native culture, and regional natural history at 50 Main Street. Smart midday counter-programming when Creek Street is packed.',
-          },
-          {
-            name: 'Waterfront, tunnel & harbors',
-            detail:
-              'Photo walks along the docks and through the downtown tunnel. Best light and fewer elbows early morning or near all-aboard.',
-          },
-          {
-            name: 'Waterfront dining (e.g. Alaska Fish House)',
-            detail:
-              'Fish and chips and harbor views near the docks. Peak lunch lines hit noon–2 p.m. on ship days — eat early or late.',
-          },
-        ],
-      },
-      {
-        heading: 'Culture & totem parks',
-        body: [
-          'Standing totem poles are among the most famous things to see in Ketchikan Alaska. Tour buses concentrate mid-morning through early afternoon.',
-        ],
-        items: [
-          {
-            name: 'Totem Bight State Historical Park',
-            detail:
-              'Fifteen restored poles and a replica clan house in forest north of downtown (~10 miles). Aim before 9 a.m. or after 3 p.m. to miss bus waves.',
-          },
-          {
-            name: 'Saxman Native Village',
-            detail:
-              'Large collection of standing poles with cultural programs about 2.5 miles south of downtown. Afternoons are often quieter than the morning tour rush.',
-          },
-        ],
-      },
-      {
-        heading: 'Ketchikan hiking trails & rainforest',
-        body: [
-          'Ketchikan sits in a temperate rainforest. These hiking trails and forest walks are some of the best things to do when you want green quiet instead of souvenir rows — and most stay calmer than Creek Street even on extreme ship days.',
-        ],
-        items: [
-          {
-            name: 'Rainbird Trail',
-            detail:
-              'About 1.3 miles of boardwalk through rainforest with Tongass Narrows views, near downtown off Park Avenue. Low cruise sensitivity — ideal on packed dock days.',
-          },
-          {
-            name: 'Deer Mountain Trail',
-            detail:
-              'Steeper hike from near downtown toward alpine views above the port. Plan 3–5 hours; solitude improves after the first mile.',
-          },
-          {
-            name: 'Ward Lake Recreation Area',
-            detail:
-              'Easy lakeside trails, picnic spots, and fishing ~7 miles north. Rarely on cruise excursion loops — a local favorite rainforest escape.',
-          },
-          {
-            name: 'Rainforest canopy zip-lining',
-            detail:
-              'Guided zip lines and suspension bridges through old growth near Herring Cove. Book first or last slots; mid-morning fills with cruise groups.',
-          },
-        ],
-      },
-      {
-        heading: 'Wildlife & adventure',
-        body: [
-          'Beyond the sidewalk attractions, these experiences show another side of Ketchikan things to do — water, wildlife, and time away from the pier.',
-        ],
-        items: [
-          {
-            name: 'Kayak Tongass Narrows',
-            detail:
-              'Paddle for seals, eagles, and occasional whales. Morning departures (around 7–8 a.m.) usually beat the busiest excursion windows.',
-          },
-          {
-            name: 'Herring Cove bear viewing',
-            detail:
-              'Seasonal black bear fishing (roughly July–September). Midday tours crowd platforms; independent early or evening visits feel calmer.',
-          },
-        ],
-      },
-      {
-        heading: 'How to time attractions around cruise crowds',
-        body: [
-          'Open your travel date on the KTN Port schedule. Note ship count, downtown vs Ward Cove berths, and the weather-adjusted crowd band. Downtown tourist attractions feel the walk-off surge most; rainforest trails and Ward Lake rarely do.',
-          'For a short port call: Creek Street or the Discovery Center first if you arrive early, a booked tour midday, then a second downtown pass before all-aboard. For a land stay: pick low ship-count days from the month calendar for photography and shopping, and save Rainbird or Deer Mountain for any day the docks look extreme.',
-          'Want live “go now / wait” tips by spot? The Activities page pairs these same places with today’s crowd curve.',
-        ],
-      },
-    ],
-  },
   {
     slug: 'best-time-to-visit-ketchikan',
     title: 'Best Time to Visit Ketchikan Without Crowds',

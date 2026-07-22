@@ -65,15 +65,6 @@ export function GuidePage() {
         <Link to="/stats" className="font-semibold text-channel-700">
           season stats
         </Link>
-        {guide.slug === 'things-to-do-in-ketchikan' && (
-          <>
-            {' '}
-            ·{' '}
-            <Link to="/activities" className="font-semibold text-channel-700">
-              activities by today’s crowd
-            </Link>
-          </>
-        )}
       </p>
 
       {guide.sections.map((s) => (
@@ -86,18 +77,6 @@ export function GuidePage() {
               {p}
             </p>
           ))}
-          {s.items && s.items.length > 0 && (
-            <ul className="mt-2 divide-y divide-fog-200 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
-              {s.items.map((item) => (
-                <li key={item.name} className="px-4 py-3 sm:px-5">
-                  <h3 className="font-semibold text-spruce-900">{item.name}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-fog-600">
-                    {item.detail}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
       ))}
 

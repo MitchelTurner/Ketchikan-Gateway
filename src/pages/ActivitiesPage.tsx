@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { QuietHoursMap } from '../components/QuietHoursMap'
 import { activitiesForCrowd, ACTIVITIES } from '../data/activities'
 import { useGateway } from '../hooks/GatewayContext'
@@ -46,15 +45,7 @@ export function ActivitiesPage() {
           <strong className="font-semibold text-spruce-800">
             {today.weatherAdjustedCrowd}
           </strong>
-          . Favorite spots get a live go-now / wait tip from the hourly curve. For a full
-          visitor list of attractions, see{' '}
-          <Link
-            to="/guides/things-to-do-in-ketchikan"
-            className="font-semibold text-channel-700"
-          >
-            Things to Do in Ketchikan Alaska
-          </Link>
-          .
+          . Favorite spots get a live go-now / wait tip from the hourly curve.
         </p>
       </div>
 
