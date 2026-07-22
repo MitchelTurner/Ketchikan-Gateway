@@ -28,8 +28,8 @@ export function GuidesIndexPage() {
           {meta.h1}
         </h1>
         <p className="mt-2 max-w-2xl text-fog-600">
-          Practical planning for cruise passengers and locals — always linked back to the
-          live schedule data.
+          Things to do, attractions, and crowd-aware planning for cruise passengers and
+          locals — always linked back to the live schedule data.
         </p>
       </header>
       <ul className="grid gap-4 md:grid-cols-1">
@@ -49,11 +49,18 @@ export function GuidesIndexPage() {
         ))}
       </ul>
       <p className="text-sm text-fog-600">
-        Looking for neighborhood tips?{' '}
+        Start with{' '}
+        <Link
+          to="/guides/things-to-do-in-ketchikan"
+          className="font-semibold text-channel-700"
+        >
+          Things to Do in Ketchikan Alaska
+        </Link>{' '}
+        for the attractions list, or open{' '}
         <Link to="/activities" className="font-semibold text-channel-700">
           Activities
         </Link>{' '}
-        lists quieter downtown stops by crowd level.
+        for quieter stops ranked by today’s crowd.
       </p>
     </div>
   )
