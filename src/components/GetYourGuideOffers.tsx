@@ -1,20 +1,40 @@
-import { GYG_DESTINATION_CTA, GYG_OFFERS } from '../data/getyourguideOffers'
+import { useMemo, useState } from 'react'
+import {
+  GYG_BROWSE_LINKS,
+  GYG_DESTINATION_CTA,
+  GYG_OFFERS,
+  type GygCategory,
+} from '../data/getyourguideOffers'
 import { getGygPartnerId, gygUrl } from '../lib/getyourguide'
 
-const CATEGORY_LABEL: Record<(typeof GYG_OFFERS)[number]['category'], string> = {
+const CATEGORY_LABEL: Record<GygCategory, string> = {
   culture: 'Culture',
   wildlife: 'Wildlife',
   adventure: 'Adventure',
   food: 'Food',
   flight: 'Flightseeing',
   water: 'On the water',
+  show: 'Shows',
 }
+
+const FILTERS: { id: 'all' | GygCategory; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'culture', label: 'Culture' },
+  { id: 'wildlife', label: 'Wildlife' },
+  { id: 'adventure', label: 'Adventure' },
+  { id: 'water', label: 'Water' },
+  { id: 'flight', label: 'Flights' },
+  { id: 'food', label: 'Food' },
+  { id: 'show', label: 'Shows' },
+]
 
 type Props = {
   /** Campaign tag for GetYourGuide cmp= tracking */
   campaign?: string
   /** Limit featured cards; default shows all curated offers */
   limit?: number
+  /** Show category filter chips (default true when not limited) */
+  showFilters?: boolean
 }
 
 /**
@@ -24,9 +44,18 @@ type Props = {
 export function GetYourGuideOffers({
   campaign = 'ktn-things-to-do',
   limit,
+  showFilters,
 }: Props) {
   const partnerId = getGygPartnerId()
-  const offers = limit ? GYG_OFFERS.slice(0, limit) : GYG_OFFERS
+  const [filter, setFilter] = useState<'all' | GygCategory>('all')
+  const filtersEnabled = showFilters ?? limit == null
+
+  const offers = useMemo(() => {
+    const base =
+      filter === 'all' ? GYG_OFFERS : GYG_OFFERS.filter((o) => o.category === filter)
+    return limit ? base.slice(0, limit) : base
+  }, [filter, limit])
+
   const hubHref = gygUrl(GYG_DESTINATION_CTA.path, { campaign })
 
   return (
@@ -45,11 +74,55 @@ export function GetYourGuideOffers({
           Things to do in Ketchikan — tours & shore excursions
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-fog-600">
-          Hand-picked GetYourGuide activities that match the attractions in this guide.
-          Check your ship’s arrival on the KTN Port day page, then book an early or late
-          slot when downtown is busiest.
+          {GYG_OFFERS.length}+ hand-picked GetYourGuide activities — culture, wildlife,
+          rainforest, water, food, and shows. Check your ship’s arrival on the KTN Port day
+          page, then book an early or late slot when downtown is busiest.
         </p>
       </div>
+
+      <ul className="flex flex-wrap gap-2">
+        {GYG_BROWSE_LINKS.map((link) => (
+          <li key={link.id}>
+            <a
+              href={gygUrl(link.path, { campaign: `${campaign}-browse-${link.id}` })}
+              target="_blank"
+              rel="sponsored noopener noreferrer"
+              className="inline-flex rounded-full border border-channel-300 bg-white/80 px-3 py-1.5 text-xs font-semibold text-channel-800 no-underline transition hover:border-channel-500 hover:bg-channel-50"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      {filtersEnabled && (
+        <div
+          className="flex flex-wrap gap-1.5"
+          role="tablist"
+          aria-label="Filter tours by category"
+        >
+          {FILTERS.map((f) => {
+            const active = filter === f.id
+            return (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setFilter(f.id)}
+                className={[
+                  'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                  active
+                    ? 'bg-spruce-900 text-fog-50'
+                    : 'bg-white/80 text-fog-700 ring-1 ring-fog-200 hover:ring-channel-400',
+                ].join(' ')}
+              >
+                {f.label}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       <ul className="grid gap-3 sm:grid-cols-2">
         {offers.map((offer) => {
@@ -97,6 +170,21 @@ export function GetYourGuideOffers({
           )
         })}
       </ul>
+
+      {offers.length === 0 && (
+        <p className="text-sm text-fog-600">
+          No tours in this category yet — try All, or{' '}
+          <a
+            href={hubHref}
+            target="_blank"
+            rel="sponsored noopener noreferrer"
+            className="font-semibold text-channel-700"
+          >
+            browse GetYourGuide
+          </a>
+          .
+        </p>
+      )}
 
       <div className="flex flex-col gap-3 rounded-xl border border-spruce-900/10 bg-spruce-950 px-4 py-4 text-fog-100 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">

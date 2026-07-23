@@ -150,7 +150,7 @@ export function ActivitiesPage() {
         })}
       </div>
 
-      <GetYourGuideOffers campaign="ktn-activities" limit={4} />
+      <GetYourGuideOffers campaign="ktn-activities" limit={8} showFilters />
     </div>
   )
 }
