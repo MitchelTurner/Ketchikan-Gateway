@@ -49,7 +49,7 @@ export async function fetchMarineDay(date: string): Promise<MarineDay> {
 
   try {
     const windRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=windspeed_10m_max,windgusts_10m_max&timezone=America%2FJuneau&forecast_days=3`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=windspeed_10m_max,windgusts_10m_max&timezone=America%2FAnchorage&forecast_days=3`,
     )
     if (windRes.ok) {
       const w = (await windRes.json()) as {
@@ -70,7 +70,7 @@ export async function fetchMarineDay(date: string): Promise<MarineDay> {
 
   try {
     const mRes = await fetch(
-      `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&daily=wave_height_max&timezone=America%2FJuneau&forecast_days=3`,
+      `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&daily=wave_height_max&timezone=America%2FAnchorage&forecast_days=3`,
     )
     if (mRes.ok) {
       const m = (await mRes.json()) as {

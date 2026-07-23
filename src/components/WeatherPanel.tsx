@@ -12,7 +12,7 @@ function nextDryWindow(weather: DayWeather): string | null {
   if (hourly.length === 0) return null
   const nowHour = Number(
     new Date().toLocaleString('en-US', {
-      timeZone: 'America/Juneau',
+      timeZone: 'America/Anchorage',
       hour: 'numeric',
       hour12: false,
     }),
