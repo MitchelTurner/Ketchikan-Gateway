@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   GYG_BROWSE_LINKS,
   GYG_DESTINATION_CTA,
@@ -28,13 +28,26 @@ const FILTERS: { id: 'all' | GygCategory; label: string }[] = [
   { id: 'show', label: 'Shows' },
 ]
 
+const DURATION_CHIPS: { id: string; label: string; maxHours: number | null }[] = [
+  { id: 'any', label: 'Any length', maxHours: null },
+  { id: '2h', label: '≤ 2h', maxHours: 2 },
+  { id: '3h', label: '≤ 3h', maxHours: 3 },
+  { id: '4h', label: '≤ 4h', maxHours: 4 },
+]
+
 type Props = {
   /** Campaign tag for GetYourGuide cmp= tracking */
   campaign?: string
-  /** Limit featured cards; default shows all curated offers */
+  /** Hard cap on cards after filters (e.g. Activities teaser) */
   limit?: number
+  /** Progressive reveal — show this many before “Show more” */
+  initialVisible?: number
   /** Show category filter chips (default true when not limited) */
   showFilters?: boolean
+  /** Suggest tours that fit today’s shore window */
+  maxDurationHours?: number | null
+  /** Anchor id for TOC */
+  id?: string
 }
 
 /**
@@ -44,24 +57,40 @@ type Props = {
 export function GetYourGuideOffers({
   campaign = 'ktn-things-to-do',
   limit,
+  initialVisible = 6,
   showFilters,
+  maxDurationHours = null,
+  id = 'bookable-tours',
 }: Props) {
   const partnerId = getGygPartnerId()
   const [filter, setFilter] = useState<'all' | GygCategory>('all')
+  const [durationMax, setDurationMax] = useState<number | null>(maxDurationHours)
+  const [expanded, setExpanded] = useState(false)
   const filtersEnabled = showFilters ?? limit == null
 
-  const offers = useMemo(() => {
-    const base =
-      filter === 'all' ? GYG_OFFERS : GYG_OFFERS.filter((o) => o.category === filter)
-    return limit ? base.slice(0, limit) : base
-  }, [filter, limit])
+  useEffect(() => {
+    if (maxDurationHours != null) setDurationMax(maxDurationHours)
+  }, [maxDurationHours])
 
+  const filtered = useMemo(() => {
+    let list =
+      filter === 'all' ? GYG_OFFERS : GYG_OFFERS.filter((o) => o.category === filter)
+    if (durationMax != null) {
+      list = list.filter((o) => o.durationHours <= durationMax)
+    }
+    if (limit != null) list = list.slice(0, limit)
+    return list
+  }, [filter, durationMax, limit])
+
+  const visible = expanded || limit != null ? filtered : filtered.slice(0, initialVisible)
+  const canShowMore = limit == null && !expanded && filtered.length > initialVisible
   const hubHref = gygUrl(GYG_DESTINATION_CTA.path, { campaign })
 
   return (
     <section
+      id={id}
       aria-labelledby="gyg-offers-heading"
-      className="space-y-4 rounded-2xl border border-channel-200/80 bg-gradient-to-br from-white/90 to-channel-50/50 p-4 sm:p-5"
+      className="guide-tours space-y-4 scroll-mt-28 rounded-2xl border border-channel-200/80 bg-gradient-to-br from-white/90 to-channel-50/50 p-4 sm:p-5 print:break-inside-avoid"
     >
       <div className="space-y-2">
         <p className="text-[0.65rem] font-semibold tracking-wider text-channel-700 uppercase">
@@ -74,13 +103,19 @@ export function GetYourGuideOffers({
           Things to do in Ketchikan — tours & shore excursions
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-fog-600">
-          {GYG_OFFERS.length}+ hand-picked GetYourGuide activities — culture, wildlife,
-          rainforest, water, food, and shows. Check your ship’s arrival on the KTN Port day
-          page, then book an early or late slot when downtown is busiest.
+          {GYG_OFFERS.length}+ hand-picked GetYourGuide activities. Filter by category or
+          tour length to match your ship window, then book with free cancellation on most
+          activities.
         </p>
+        {maxDurationHours != null && (
+          <p className="text-xs font-medium text-channel-800">
+            Tip: today’s shore window suggests tours around {maxDurationHours}h or less —
+            adjust below if your ship differs.
+          </p>
+        )}
       </div>
 
-      <ul className="flex flex-wrap gap-2">
+      <ul className="flex flex-wrap gap-2 print:hidden">
         {GYG_BROWSE_LINKS.map((link) => (
           <li key={link.id}>
             <a
@@ -96,36 +131,69 @@ export function GetYourGuideOffers({
       </ul>
 
       {filtersEnabled && (
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="tablist"
-          aria-label="Filter tours by category"
-        >
-          {FILTERS.map((f) => {
-            const active = filter === f.id
-            return (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setFilter(f.id)}
-                className={[
-                  'rounded-full px-3 py-1.5 text-xs font-semibold transition',
-                  active
-                    ? 'bg-spruce-900 text-fog-50'
-                    : 'bg-white/80 text-fog-700 ring-1 ring-fog-200 hover:ring-channel-400',
-                ].join(' ')}
-              >
-                {f.label}
-              </button>
-            )
-          })}
+        <div className="space-y-2 print:hidden">
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="tablist"
+            aria-label="Filter tours by category"
+          >
+            {FILTERS.map((f) => {
+              const active = filter === f.id
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => {
+                    setFilter(f.id)
+                    setExpanded(false)
+                  }}
+                  className={[
+                    'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                    active
+                      ? 'bg-spruce-900 text-fog-50'
+                      : 'bg-white/80 text-fog-700 ring-1 ring-fog-200 hover:ring-channel-400',
+                  ].join(' ')}
+                >
+                  {f.label}
+                </button>
+              )
+            })}
+          </div>
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="group"
+            aria-label="Filter by tour duration"
+          >
+            {DURATION_CHIPS.map((d) => {
+              const active = durationMax === d.maxHours
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => {
+                    setDurationMax(d.maxHours)
+                    setExpanded(false)
+                  }}
+                  className={[
+                    'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                    active
+                      ? 'bg-channel-600 text-white'
+                      : 'bg-white/80 text-fog-700 ring-1 ring-fog-200 hover:ring-channel-400',
+                  ].join(' ')}
+                >
+                  {d.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
 
       <ul className="grid gap-3 sm:grid-cols-2">
-        {offers.map((offer) => {
+        {visible.map((offer) => {
           const href = gygUrl(offer.path, { campaign: `${campaign}-${offer.id}` })
           return (
             <li key={offer.id}>
@@ -171,9 +239,19 @@ export function GetYourGuideOffers({
         })}
       </ul>
 
-      {offers.length === 0 && (
+      {canShowMore && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="w-full rounded-full border border-channel-400 bg-white py-2.5 text-sm font-semibold text-channel-800 transition hover:bg-channel-50 print:hidden"
+        >
+          Show {filtered.length - initialVisible} more tours
+        </button>
+      )}
+
+      {filtered.length === 0 && (
         <p className="text-sm text-fog-600">
-          No tours in this category yet — try All, or{' '}
+          No tours match these filters — try Any length, or{' '}
           <a
             href={hubHref}
             target="_blank"
@@ -186,7 +264,7 @@ export function GetYourGuideOffers({
         </p>
       )}
 
-      <div className="flex flex-col gap-3 rounded-xl border border-spruce-900/10 bg-spruce-950 px-4 py-4 text-fog-100 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-xl border border-spruce-900/10 bg-spruce-950 px-4 py-4 text-fog-100 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <div className="min-w-0">
           <p className="font-display text-lg font-semibold text-white">
             {GYG_DESTINATION_CTA.title}

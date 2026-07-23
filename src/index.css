@@ -166,3 +166,40 @@
   --crowd-soft: var(--color-alert-100);
   --crowd-ink: var(--color-alert-600);
 }
+
+/* Guide print / offline-friendly layout */
+@media print {
+  body {
+    background: white !important;
+    color: #111;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  header.sticky,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .guide-article,
+  .guide-toc,
+  .guide-live,
+  .guide-tours {
+    max-width: none;
+    box-shadow: none;
+  }
+
+  .guide-article a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.7em;
+    color: #555;
+    word-break: break-all;
+  }
+
+  .guide-article a[href^="/"]::after {
+    content: none;
+  }
+}

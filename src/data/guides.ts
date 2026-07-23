@@ -7,17 +7,27 @@ export type GuideImage = {
   creditUrl?: string
 }
 
+export type GuideTag = 'port-day' | 'planning' | 'berths' | 'tours' | 'crowds'
+
+export type GuideAudience = 'cruise' | 'local' | 'planner'
+
 export type GuideListItem = {
   name: string
   detail: string
+  /** GetYourGuide search query for “Book related tours” */
+  bookQuery?: string
 }
 
 export type GuideSection = {
+  /** Optional stable id for TOC anchors (auto-slugged from heading if omitted) */
+  id?: string
   heading: string
   body: string[]
   image?: GuideImage
   /** Optional consumer-facing list (attractions, trails, etc.) */
   items?: GuideListItem[]
+  /** Related guide to surface after this section */
+  relatedSlug?: string
 }
 
 export type Guide = {
@@ -28,6 +38,11 @@ export type Guide = {
   readMinutes: number
   /** Primary keyword phrase for SEO context */
   focusKeyword: string
+  tags: GuideTag[]
+  audiences: GuideAudience[]
+  /** Promote on guides index */
+  featured?: boolean
+  relatedSlugs: string[]
   hero: GuideImage
   faqs: GuideFaq[]
   sections: GuideSection[]
@@ -42,6 +57,14 @@ export const GUIDES: Guide[] = [
     updated: '2026-07-22',
     readMinutes: 10,
     focusKeyword: 'things to do in Ketchikan Alaska',
+    tags: ['port-day', 'tours', 'crowds'],
+    audiences: ['cruise', 'planner'],
+    featured: true,
+    relatedSlugs: [
+      'ketchikan-shore-excursions-timing',
+      'best-time-to-visit-ketchikan',
+      'ketchikan-berth-locations-explained',
+    ],
     hero: {
       src: '/guides/creek-street.jpg',
       alt: 'Historic Creek Street boardwalk over Ketchikan Creek in Ketchikan, Alaska',
@@ -91,26 +114,31 @@ export const GUIDES: Guide[] = [
           creditUrl:
             'https://commons.wikimedia.org/wiki/File:Calle_hist%C3%B3rica_Creek,_Ketchikan,_Alaska,_Estados_Unidos,_2017-08-16,_DD_52.jpg',
         },
+        relatedSlug: 'ketchikan-shore-excursions-timing',
         items: [
           {
             name: 'Creek Street & Married Man’s Trail',
             detail:
               'Historic boardwalk over Ketchikan Creek — galleries, shops, and salmon viewing in season. The #1 downtown tourist stop; go early or late on busy cruise days.',
+            bookQuery: 'Ketchikan city tour Creek Street',
           },
           {
             name: 'Southeast Alaska Discovery Center',
             detail:
               'Indoor exhibits on rainforest ecology, Native culture, and regional natural history at 50 Main Street. Smart midday counter-programming when Creek Street is packed.',
+            bookQuery: 'Ketchikan rainforest culture tour',
           },
           {
             name: 'Waterfront, tunnel & harbors',
             detail:
               'Photo walks along the docks and through the downtown tunnel. Best light and fewer elbows early morning or near all-aboard.',
+            bookQuery: 'Ketchikan shore excursion',
           },
           {
             name: 'Waterfront dining (e.g. Alaska Fish House)',
             detail:
               'Fish and chips and harbor views near the docks. Peak lunch lines hit noon–2 p.m. on ship days — eat early or late.',
+            bookQuery: 'Ketchikan crab feast seafood',
           },
         ],
       },
@@ -126,16 +154,19 @@ export const GUIDES: Guide[] = [
           creditUrl:
             'https://commons.wikimedia.org/wiki/File:Totem_Bight_Community_House,_Mud_Bight_Village,_North_Tongass_Highway,_Ketchikan_vicinity_(Ketchikan_Gateway_Borough,_Alaska).jpg',
         },
+        relatedSlug: 'ketchikan-berth-locations-explained',
         items: [
           {
             name: 'Totem Bight State Historical Park',
             detail:
               'Fifteen restored poles and a replica clan house in forest north of downtown (~10 miles). Aim before 9 a.m. or after 3 p.m. to miss bus waves.',
+            bookQuery: 'Totem Bight Ketchikan tour',
           },
           {
             name: 'Saxman Native Village',
             detail:
               'Large collection of standing poles with cultural programs about 2.5 miles south of downtown. Afternoons are often quieter than the morning tour rush.',
+            bookQuery: 'Saxman Village Ketchikan',
           },
         ],
       },
@@ -156,21 +187,25 @@ export const GUIDES: Guide[] = [
             name: 'Rainbird Trail',
             detail:
               'About 1.3 miles of boardwalk through rainforest with Tongass Narrows views, near downtown off Park Avenue. Low cruise sensitivity — ideal on packed dock days.',
+            bookQuery: 'Ketchikan rainforest hiking',
           },
           {
             name: 'Deer Mountain Trail',
             detail:
               'Steeper hike from near downtown toward alpine views above the port. Plan 3–5 hours; solitude improves after the first mile.',
+            bookQuery: 'Ketchikan hiking tour',
           },
           {
             name: 'Ward Lake Recreation Area',
             detail:
               'Easy lakeside trails, picnic spots, and fishing ~7 miles north. Rarely on cruise excursion loops — a local favorite rainforest escape.',
+            bookQuery: 'Ketchikan rainforest experience',
           },
           {
             name: 'Rainforest canopy zip-lining',
             detail:
               'Guided zip lines and suspension bridges through old growth near Herring Cove. Book first or last slots; mid-morning fills with cruise groups.',
+            bookQuery: 'Forest Zipline Ketchikan',
           },
         ],
       },
@@ -191,16 +226,19 @@ export const GUIDES: Guide[] = [
             name: 'Kayak Tongass Narrows',
             detail:
               'Paddle for seals, eagles, and occasional whales. Morning departures (around 7–8 a.m.) usually beat the busiest excursion windows.',
+            bookQuery: 'Kayak Ketchikan Alaska',
           },
           {
             name: 'Herring Cove bear viewing',
             detail:
               'Seasonal black bear fishing (roughly July–September). Midday tours crowd platforms; independent early or evening visits feel calmer.',
+            bookQuery: 'Bear Viewing Ketchikan',
           },
         ],
       },
       {
         heading: 'How to time attractions around cruise crowds',
+        relatedSlug: 'best-time-to-visit-ketchikan',
         body: [
           'Open your travel date on the KTN Port schedule. Note ship count, downtown vs Ward Cove berths, and the weather-adjusted crowd band. Downtown tourist attractions feel the walk-off surge most; rainforest trails and Ward Lake rarely do.',
           'For a short port call: Creek Street or the Discovery Center first if you arrive early, a booked tour midday, then a second downtown pass before all-aboard. For a land stay: pick low ship-count days from the month calendar for photography and shopping, and save Rainbird or Deer Mountain for any day the docks look extreme.',
@@ -217,6 +255,13 @@ export const GUIDES: Guide[] = [
     updated: '2026-07-22',
     readMinutes: 8,
     focusKeyword: 'best time to visit Ketchikan',
+    tags: ['planning', 'crowds'],
+    audiences: ['planner', 'cruise', 'local'],
+    relatedSlugs: [
+      'things-to-do-in-ketchikan',
+      'ketchikan-shore-excursions-timing',
+      'ketchikan-berth-locations-explained',
+    ],
     hero: {
       src: '/guides/cruise-ships.jpg',
       alt: 'Cruise ship docked along the Ketchikan waterfront in Alaska',
@@ -287,6 +332,13 @@ export const GUIDES: Guide[] = [
     updated: '2026-07-22',
     readMinutes: 7,
     focusKeyword: 'Ketchikan berths',
+    tags: ['berths', 'crowds', 'port-day'],
+    audiences: ['cruise', 'local', 'planner'],
+    relatedSlugs: [
+      'things-to-do-in-ketchikan',
+      'best-time-to-visit-ketchikan',
+      'ketchikan-shore-excursions-timing',
+    ],
     hero: {
       src: '/guides/cruise-ships.jpg',
       alt: 'Cruise ship at a Ketchikan berth along Tongass Narrows',
@@ -349,6 +401,13 @@ export const GUIDES: Guide[] = [
     updated: '2026-07-22',
     readMinutes: 6,
     focusKeyword: 'Ketchikan shore excursions',
+    tags: ['tours', 'port-day', 'planning'],
+    audiences: ['cruise', 'planner'],
+    relatedSlugs: [
+      'things-to-do-in-ketchikan',
+      'ketchikan-berth-locations-explained',
+      'best-time-to-visit-ketchikan',
+    ],
     hero: {
       src: '/guides/harbor-overview.jpg',
       alt: 'Ketchikan harbor and hillside from the cruise dock on a shore day',
@@ -383,6 +442,7 @@ export const GUIDES: Guide[] = [
       },
       {
         heading: 'DIY downtown strategy',
+        relatedSlug: 'things-to-do-in-ketchikan',
         body: [
           'On heavy days, walk the core right after arrival or in the last 90 minutes before all-aboard. Midday is for booked tours away from the docks or indoor stops like the Discovery Center.',
           'On light or zero-ship days, midday is wide open — use the schedule calendar to hunt those dates if shopping and photography matter more than tour inventory. Pair this with our things to do in Ketchikan guide for attraction ideas.',
@@ -407,4 +467,8 @@ export const GUIDES: Guide[] = [
 
 export function getGuide(slug: string): Guide | undefined {
   return GUIDES.find((g) => g.slug === slug)
+}
+
+export function getFeaturedGuide(): Guide | undefined {
+  return GUIDES.find((g) => g.featured) ?? GUIDES[0]
 }

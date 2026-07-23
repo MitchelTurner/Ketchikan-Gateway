@@ -17,6 +17,8 @@ export type GygOffer = {
   blurb: string
   /** Duration hint shown in the card */
   duration: string
+  /** Numeric hours for ship-window filtering */
+  durationHours: number
   /** From-price label (informational; live price is on GetYourGuide) */
   fromPrice: string
   category: GygCategory
@@ -96,6 +98,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Native-guided visit to Totem Bight with rainforest and wildlife stops — a strong pick when you want culture without the midday Creek Street crush.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $84',
     category: 'culture',
     crowdTip: 'Book an early slot on multi-ship days to beat downtown walk-off peaks.',
@@ -109,6 +112,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Guided time in the temperate rainforest — ideal when Front Street is packed and you want green quiet within a half-day window.',
     duration: 'About 2.5 hours',
+    durationHours: 2.5,
     fromPrice: 'From $129',
     category: 'adventure',
     crowdTip: 'Pairs well with a late Creek Street walk after ships thin out.',
@@ -122,6 +126,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Classic overview of Ketchikan attractions — totems, city highlights, and wildlife lookouts in one cruise-friendly loop.',
     duration: 'About 2 hours',
+    durationHours: 2,
     fromPrice: 'From $85',
     category: 'culture',
     crowdTip: 'Good first-port-call overview before you decide what to DIY.',
@@ -135,6 +140,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'See downtown highlights, Saxman totem park, and a salmon tasting — culture plus a flavor of Alaska in one outing.',
     duration: 'About 2.5 hours',
+    durationHours: 2.5,
     fromPrice: 'From $99',
     category: 'culture',
     crowdTip: 'Afternoons at Saxman are often quieter than the morning bus rush.',
@@ -148,6 +154,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Rainforest paths and totem storytelling away from the densest dockside souvenir stretch.',
     duration: 'About 2.75 hours',
+    durationHours: 2.75,
     fromPrice: 'From $110',
     category: 'culture',
     crowdTip: 'A solid midday booking when Creek Street is shoulder-to-shoulder.',
@@ -161,6 +168,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Flightseeing over granite walls, waterfalls, and fjords — the signature “wow” excursion when weather and budget allow.',
     duration: 'About 2 hours',
+    durationHours: 2,
     fromPrice: 'From $389',
     category: 'flight',
     crowdTip: 'Weather-sensitive: check the day page rain outlook before you commit.',
@@ -174,6 +182,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Canopy adventure through old growth — a solid midday alternative when downtown tourist attractions are at peak density.',
     duration: 'About 3.5 hours',
+    durationHours: 3.5,
     fromPrice: 'From $150',
     category: 'adventure',
     crowdTip: 'Mid-morning slots often fill with cruise groups; early or late is calmer.',
@@ -187,6 +196,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Guided kart run through forest roads — high-energy shore time that keeps you off the crowded boardwalk.',
     duration: 'About 3.5 hours',
+    durationHours: 3.5,
     fromPrice: 'From $275',
     category: 'adventure',
     crowdTip: 'Book ahead on extreme ship days; adventure inventory sells out first.',
@@ -200,6 +210,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Pedal and walk into quieter edges of town and forest — more ground covered than a sidewalk stroll alone.',
     duration: 'About 4 hours',
+    durationHours: 4,
     fromPrice: 'From $164',
     category: 'adventure',
     crowdTip: 'Leave right after arrival so you’re out before the heaviest pier surge.',
@@ -213,6 +224,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Guided eco-hike in rainforest at Settlers Cove — for travelers who want trails more than souvenir rows.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $125',
     category: 'adventure',
     crowdTip: 'Low downtown impact — great on extreme capacity days.',
@@ -226,6 +238,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Sit-down crab feast away from the docks — a filling break when you want seafood without hunting for a table on Front Street.',
     duration: 'About 2.5 hours',
+    durationHours: 2.5,
     fromPrice: 'From $110',
     category: 'food',
     crowdTip: 'Lunch seatings around noon–2 p.m. get busiest on extreme ship days.',
@@ -239,6 +252,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Timber sports show paired with a crab meal — classic cruise-port entertainment with a food stop built in.',
     duration: 'About 2.5 hours',
+    durationHours: 2.5,
     fromPrice: 'From $158',
     category: 'show',
     crowdTip: 'Popular on peak ship days — reserve before you sail if your call is short.',
@@ -252,6 +266,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Hands-on crab fishing experience with working-boat vibes — a memorable “only in Alaska” shore story.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $249',
     category: 'food',
     crowdTip: 'Match departure to your ship window; leave a buffer for all-aboard.',
@@ -265,6 +280,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Jet boat, forest walk, and a seafood boil — adventure plus a meal without juggling three separate bookings.',
     duration: 'About 3.75 hours',
+    durationHours: 3.75,
     fromPrice: 'From $194',
     category: 'food',
     crowdTip: 'Longer outing — best when your ship has a full-day call.',
@@ -278,6 +294,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Paddle calm forested waterways for eagles and shoreline scenery away from the pier crowds.',
     duration: 'About 3.5 hours',
+    durationHours: 3.5,
     fromPrice: 'From $118',
     category: 'water',
     crowdTip: 'Morning departures usually leave before the densest sidewalk traffic.',
@@ -291,6 +308,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Pilot a rigid inflatable through local waters — high-thrill alternative to a sit-and-ride harbor cruise.',
     duration: 'About 3.5 hours',
+    durationHours: 3.5,
     fromPrice: 'From $179',
     category: 'water',
     crowdTip: 'Adventure inventory sells out on stacked ship days — book early.',
@@ -304,6 +322,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Fast boat out, then paddle quieter coves — a mix of speed and paddle time in one shore window.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $206',
     category: 'water',
     crowdTip: 'Confirm return time against your all-aboard on short calls.',
@@ -317,6 +336,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Whale watching with lunch included — wildlife time on the water when you want a full half-day package.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $259',
     category: 'wildlife',
     crowdTip: 'Seas and sightings vary; leave buffer before sail-away.',
@@ -330,6 +350,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Boat-based wildlife searching for whales and marine life — classic Alaska water day from Ketchikan.',
     duration: 'About 2.5 hours',
+    durationHours: 2.5,
     fromPrice: 'From $199',
     category: 'wildlife',
     crowdTip: 'Shorter than full-day packages — fits tighter ship schedules.',
@@ -343,6 +364,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Boat out for seasonal black bear viewing — a bigger wildlife commitment when you have a long port day.',
     duration: 'About 5 hours',
+    durationHours: 5,
     fromPrice: 'From $399',
     category: 'wildlife',
     crowdTip: 'Long excursion — only on days with generous arrival/departure windows.',
@@ -356,6 +378,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Guided wildlife-focused outing for guests chasing wolves, rainforest, and quieter nature time.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $125',
     category: 'wildlife',
     crowdTip: 'Nature tours keep you clear of the densest Creek Street hours.',
@@ -369,6 +392,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Downtown storytelling walk — budget-friendly, close to the ships, and easy to slot before or after a bigger tour.',
     duration: 'About 2 hours',
+    durationHours: 2,
     fromPrice: 'From $30',
     category: 'show',
     crowdTip: 'Walkable from berths 1–4; evenings feel less crowded than midday.',
@@ -382,6 +406,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Private van and guide for your group — build a totem, rainforest, or photo itinerary around your ship’s clock.',
     duration: 'About 3 hours',
+    durationHours: 3,
     fromPrice: 'From $575 / group',
     category: 'culture',
     crowdTip: 'Best when you want to dodge fixed tour-bus waves entirely.',
@@ -395,6 +420,7 @@ export const GYG_OFFERS: GygOffer[] = [
     blurb:
       'Indoor tasting and infusion class — smart rain-day plan when outdoor flights cancel.',
     duration: 'About 2 hours',
+    durationHours: 2,
     fromPrice: 'From $161',
     category: 'food',
     crowdTip: 'Great weather backup; check the day page forecast the night before.',

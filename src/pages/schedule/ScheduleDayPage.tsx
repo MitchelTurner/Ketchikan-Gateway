@@ -197,16 +197,54 @@ export function ScheduleDayPage() {
         </Link>
       </nav>
 
-      <p className="text-sm text-fog-600">
-        Planning tip:{' '}
-        <Link
-          to="/guides/best-time-to-visit-ketchikan"
-          className="font-semibold text-channel-700"
-        >
-          Best time to visit without crowds
-        </Link>
-        .
-      </p>
+      <aside className="rounded-2xl border border-channel-200 bg-channel-50/60 px-4 py-4 text-sm text-spruce-900">
+        <p className="text-[0.65rem] font-semibold tracking-wider text-channel-700 uppercase">
+          Plan this port day
+        </p>
+        {active.length === 0 || day.weatherAdjustedCrowd === 'low' ? (
+          <p className="mt-2">
+            Quieter day — DIY downtown works well.{' '}
+            <Link
+              to="/guides/things-to-do-in-ketchikan"
+              className="font-semibold text-channel-700"
+            >
+              Things to do in Ketchikan
+            </Link>{' '}
+            lists attractions;{' '}
+            <Link
+              to="/guides/best-time-to-visit-ketchikan"
+              className="font-semibold text-channel-700"
+            >
+              best time to visit
+            </Link>{' '}
+            explains how to pick soft days.
+          </p>
+        ) : (
+          <p className="mt-2">
+            Heavier crowds expected — book a tour away from the docks or go early/late.{' '}
+            <Link
+              to="/guides/things-to-do-in-ketchikan#bookable-tours"
+              className="font-semibold text-channel-700"
+            >
+              Bookable tours
+            </Link>
+            {' · '}
+            <Link
+              to="/guides/ketchikan-shore-excursions-timing"
+              className="font-semibold text-channel-700"
+            >
+              Shore excursion timing
+            </Link>
+            {' · '}
+            <Link
+              to="/guides/ketchikan-berth-locations-explained"
+              className="font-semibold text-channel-700"
+            >
+              Berth locations
+            </Link>
+          </p>
+        )}
+      </aside>
     </div>
   )
 }
