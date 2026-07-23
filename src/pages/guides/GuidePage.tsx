@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
+import { GetYourGuideOffers } from '../../components/GetYourGuideOffers'
 import { Seo } from '../../components/Seo'
 import { getGuide, type GuideImage } from '../../data/guides'
 import {
@@ -118,30 +119,35 @@ export function GuidePage() {
         )}
       </p>
 
-      {guide.sections.map((s) => (
-        <section key={s.heading} className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-spruce-900">
-            {s.heading}
-          </h2>
-          {s.image && <GuideFigure image={s.image} />}
-          {s.body.map((p) => (
-            <p key={p.slice(0, 40)} className="leading-relaxed text-fog-700">
-              {p}
-            </p>
-          ))}
-          {s.items && s.items.length > 0 && (
-            <ul className="mt-2 divide-y divide-fog-200 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
-              {s.items.map((item) => (
-                <li key={item.name} className="px-4 py-3 sm:px-5">
-                  <h3 className="font-semibold text-spruce-900">{item.name}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-fog-600">
-                    {item.detail}
-                  </p>
-                </li>
-              ))}
-            </ul>
+      {guide.sections.map((s, index) => (
+        <div key={s.heading} className="space-y-8">
+          <section className="space-y-3">
+            <h2 className="font-display text-xl font-semibold text-spruce-900">
+              {s.heading}
+            </h2>
+            {s.image && <GuideFigure image={s.image} />}
+            {s.body.map((p) => (
+              <p key={p.slice(0, 40)} className="leading-relaxed text-fog-700">
+                {p}
+              </p>
+            ))}
+            {s.items && s.items.length > 0 && (
+              <ul className="mt-2 divide-y divide-fog-200 overflow-hidden rounded-2xl border border-fog-200 bg-white/80">
+                {s.items.map((item) => (
+                  <li key={item.name} className="px-4 py-3 sm:px-5">
+                    <h3 className="font-semibold text-spruce-900">{item.name}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-fog-600">
+                      {item.detail}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          {guide.slug === 'things-to-do-in-ketchikan' && index === 0 && (
+            <GetYourGuideOffers campaign="ktn-things-to-do" />
           )}
-        </section>
+        </div>
       ))}
 
       <section>

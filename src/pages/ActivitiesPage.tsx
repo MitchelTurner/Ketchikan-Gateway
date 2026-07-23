@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { GetYourGuideOffers } from '../components/GetYourGuideOffers'
 import { QuietHoursMap } from '../components/QuietHoursMap'
 import { activitiesForCrowd, ACTIVITIES } from '../data/activities'
 import { useGateway } from '../hooks/GatewayContext'
@@ -148,6 +149,8 @@ export function ActivitiesPage() {
           )
         })}
       </div>
+
+      <GetYourGuideOffers campaign="ktn-activities" limit={4} />
     </div>
   )
 }

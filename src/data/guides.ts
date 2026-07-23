@@ -76,7 +76,7 @@ export const GUIDES: Guide[] = [
         heading: 'Ketchikan attractions at a glance',
         body: [
           'Looking for things to do in Ketchikan Alaska? The town packs historic Creek Street, world-famous totem parks, Tongass rainforest, and hiking trails that start almost from the docks into a compact waterfront. This guide lists the top Ketchikan attractions and things to see — plus when each spot feels crowded on a cruise day.',
-          'Crowds swing with the ship calendar. A multi-ship day can put more than 10,000 passengers ashore; a zero-ship day feels like a different town. Use the live schedule on KTN Port to pick quieter windows, then match the attractions below to your time and weather.',
+          'Crowds swing with the ship calendar. A multi-ship day can put more than 10,000 passengers ashore; a zero-ship day feels like a different town. Use the live schedule on KTN Port to pick quieter windows, then match the attractions below to your time and weather. Bookable shore excursions and tours are linked in the GetYourGuide section below.',
         ],
       },
       {
