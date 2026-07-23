@@ -30,7 +30,8 @@ export function useGatewayData() {
     try {
       const [shipsResult, weatherResult] = await Promise.allSettled([
         loadShipVisits(),
-        fetchWeatherForecast(16),
+        // 16-day forecast + ~40 past days so month calendars use live data
+        fetchWeatherForecast(16, 40),
       ])
 
       if (shipsResult.status === 'fulfilled') {
